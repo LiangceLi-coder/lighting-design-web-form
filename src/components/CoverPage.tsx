@@ -1,6 +1,15 @@
 import React from "react";
+import {scroller} from 'react-scroll';
 
 const Coverpage = () => {
+    const scrollToForm = () => {
+        scroller.scrollTo('form-section', {
+            duration: 800,
+            delay: 0,
+            smooth: 'easeInOutQuart',
+        });
+    };
+
     return (
         <div style={{
             height:'100vh',
@@ -9,7 +18,7 @@ const Coverpage = () => {
             flexDirection:'column',
             alignItems:'center',
             justifyContent:'center',
-            backgroundImage:'',
+            background:'#bdfff0',
         }}>
 
             <div
@@ -42,15 +51,19 @@ const Coverpage = () => {
                     style={{
                         fontSize:'1.5rem',
                         // fontFamily:'Poppins',
+                        // fontWeight:'bold',
                         marginTop:'1rem'
                     }}
                 >
                     Fill the form to upload your project
                 </div>
 
-                <button className="upload-btn">
+                <button onClick={scrollToForm} className="upload-btn">
                     Get Start
                 </button>
+                <div>
+
+                </div>
 
             </div>
 

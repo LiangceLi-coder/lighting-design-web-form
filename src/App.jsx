@@ -1,11 +1,15 @@
 import MultiStepForm from './pages/MultiStepForm';
 import Coverpage from './components/coverpage';
+import {Element} from 'react-scroll';
 
 function App() {
   return (
     <div>
       <Coverpage />
-      <MultiStepForm />
+      <Element name='form-section'>
+        <MultiStepForm />
+      </Element>
+      
     </div>
   );
 }
