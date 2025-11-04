@@ -4,6 +4,7 @@ import Step1BasicInfo from "../components/Step1BasicInfo";
 import Step2Transport from "../components/Step2BasicInfo";
 import Step3LightingDesign from "../components/Step3LightingInfo";
 import PreSubmissionChecklist from "../components/PreSubmissionChecklist";
+import Coverpage from "../components/coverpage";
 
 export default function MultiStepForm() {
   const methods = useForm({
