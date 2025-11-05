@@ -35,8 +35,7 @@ const Coverpage = () => {
                     borderRadius:'8rem'
                 }}    
             >
-                <img className=" h-15" alt="Haneco Logo" src="public\Haneco_Logo_Mono.svg">
-                </img>
+                <img className=" h-15" alt="Haneco Logo" src="/Haneco_Logo_Mono.svg" />
                 <div
                     style={{
                         fontSize:'4.5rem',
