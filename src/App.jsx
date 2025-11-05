@@ -1,5 +1,5 @@
 import MultiStepForm from './pages/MultiStepForm';
-import Coverpage from './components/coverpage';
+import Coverpage from './components/CoverPage';
 import {Element} from 'react-scroll';
 
 function App() {
