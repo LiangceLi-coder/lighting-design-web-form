@@ -96,13 +96,16 @@ body {
   padding: 4rem;
   border-radius: 8rem;
   text-align: center;
+  min-width: 60%;
+  min-height: 270px;
 }
 
 /* Logo 响应式大小 */
 .cover-logo {
-  height: clamp(60px, 10vw, 120px);
-  margin-bottom: 1rem;
+  height: clamp(60px, 4vw, 120px);
+  margin-bottom: 0.5rem;
   color: #ffffff;
+  /* size: 1rem; */
 }
 
 /* 标题响应式字体 */
@@ -110,23 +113,23 @@ body {
   font-weight: bold;
   text-align: center;
   color: white;
-  font-size: clamp(1.8rem, 5vw, 4.5rem);
+  font-size: clamp(1.8rem, 4vw, 4rem);
   line-height: 1.2;
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
 }
 
 /* 副标题文字 */
 .cover-text {
-  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-size: clamp(1rem, 1vw, 1.5rem);
   color: white;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   text-align: center;
   max-width: 80%;
 }
 
 /* 按钮样式 */
 .upload-btn {
-  margin-top: 2rem;
+  margin-top: 1.2rem;
   background: white;
   color: #00b389;
   font-size: clamp(1rem, 2vw, 1.4rem);
