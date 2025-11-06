@@ -1,74 +1,40 @@
 import React from "react";
-import {scroller} from 'react-scroll';
+import { scroller } from "react-scroll";
 
 const Coverpage = () => {
-    const scrollToForm = () => {
-        scroller.scrollTo('form-section', {
-            duration: 800,
-            delay: 0,
-            smooth: 'easeInOutQuart',
-        });
-    };
+  const scrollToForm = () => {
+    scroller.scrollTo("form-section", {
+      duration: 800,
+      delay: 0,
+      smooth: "easeInOutQuart",
+    });
+  };
 
-    return (
-        <div style={{
-            height:'100vh',
-            width:'100vw',
-            display:'flex',
-            flexDirection:'column',
-            alignItems:'center',
-            justifyContent:'center',
-            background:'#bdfff0',
-        }}>
+  return (
+    <div style={{
+        display:'flex',
+        alignItems:'center',
+        justifyContent:'center',
+                 height:'100vh',
+                //  justifyItems:'center',
+                 width:'100vw'
+    }}>
+        <div className="cover-box">
+        <img className="cover-logo" alt="Haneco Logo" src="/Haneco_Logo_Mono.svg" />
 
-            <div
-                style={{
-                    background:'#00b388',
-                    // height:'50%',
-                    // width:'50%',
-                    display:'flex',
-                    flexDirection:'column',
-                    alignItems:'center',
-                    justifyContent:'center',
-                    // gap:'1rem',
-                    padding:'4rem',
-                    borderRadius:'8rem'
-                }}    
-            >
-                <img className=" h-15" alt="Haneco Logo" src="/Haneco_Logo_Mono.svg" />
-                <div
-                    style={{
-                        fontSize:'4.5rem',
-                        fontWeight:'bold'
-                        // fontFamily:'Playfair Display',
-                    }}
-                >
-                    Project Submission Form
-                </div>
+        <div className="cover-title">Project Submission Form</div>
 
-                <div
-                    style={{
-                        fontSize:'1.5rem',
-                        // fontFamily:'Poppins',
-                        // fontWeight:'bold',
-                        marginTop:'1rem'
-                    }}
-                >
-                    Fill the form to upload your project
-                </div>
+        <div className="cover-text">Fill the form to upload your project</div>
 
-                <button onClick={scrollToForm} className="upload-btn">
-                    Get Start
-                </button>
-                <div>
+        <button onClick={scrollToForm} className="upload-btn">
+          Get Start
+        </button>
+      </div>
+    </div>
 
-                </div>
+      
 
-            </div>
-
-            
-        </div>
-    );
+  );
 };
 
 export default Coverpage;
