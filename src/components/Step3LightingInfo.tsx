@@ -165,7 +165,7 @@ const [uploadedFiles, setUploadedFiles] = useState([]);
                   <option key={p} value={p}>{p}</option>
                 ))}
               </select>
-              <button type="button" onClick={() => remove(index)} className="text-red-600 font-semibold">Remove</button>
+              <button type="button" onClick={() => remove(index)} className="text-white font-semibold rounded-full bg-[#00b388] hover:bg-[#045542]">Remove</button>
             </div>
           );
         })}
