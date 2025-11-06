@@ -96,7 +96,7 @@ body {
   padding: 4rem;
   /* border-radius: 8rem; */
   text-align: center;
-  min-width: 60%;
+  min-width: 100%;
   min-height: 270px;
 }
 
@@ -151,7 +151,7 @@ body {
   .cover-box {
     width: 75%;
     height: 55%;
-    border-radius: 5rem;
+    /* border-radius: 5rem; */
     padding: 3rem;
   }
 }
@@ -160,7 +160,7 @@ body {
   .cover-box {
     width: 85%;
     height: auto;
-    border-radius: 3rem;
+    /* border-radius: 3rem; */
     padding: 2rem;
   }
 }
@@ -168,7 +168,7 @@ body {
 @media (max-width: 480px) {
   .cover-box {
     width: 90%;
-    border-radius: 2rem;
+    /* border-radius: 2rem; */
     padding: 1.5rem;
   }
 }
