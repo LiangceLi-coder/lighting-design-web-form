@@ -61,6 +61,7 @@ export default function PreSubmissionChecklist({ onBack, onSubmit }) {
           <button
             type="button"
             onClick={() => onSubmit(formData)}
+            disabled={true}
             className="bg-[#00B388] hover:bg-[#00a177] text-white px-6 py-2 rounded-lg font-semibold"
           >
             Submit
