@@ -16,10 +16,12 @@ const Footer = () => {
 
                 <p style={{
                     marginLeft:'8rem',
+                    fontSize:'1vw'
                 }}>Copyright © 2025 Haneco Lighting</p>
 
                 <p style={{
                     marginRight:'8rem',
+                    fontSize:'1vw'
                 }}>Powered By Haneco Lighting</p>
 
             </div>
