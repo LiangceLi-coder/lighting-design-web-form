@@ -17,8 +17,36 @@ export default function Step1BasicInfo({ onNext }) {
     setValue("wholesaler", "");
   }, [selectedTerritory, setValue]);
 
-  const submitHandler = (data) => {
+  const submitHandler = async (data) => {
     console.log("Step 1 Data:", data);
+
+    const sfData = new URLSearchParams();
+    sfData.append("orgid", "00D6F000000FxAK");
+    sfData.append("retURL", "https://www.google.com");
+    sfData.append("email", data.email);
+    sfData.append("phone", data.phone);
+    sfData.append("priority", data.priority || "Medium");
+    sfData.append("00NOa000003THuz", data.role);
+    sfData.append("00NOa00000F6vOR", data.projectName);
+    sfData.append("00N6F00000HjgSL", data.wholesaler);
+    sfData.append("description", `Territory: ${data.territory}\nAddress: ${data.address?.line1}`);
+
+    try {
+      await fetch(
+      "https://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8",
+      {
+        method: "POST",
+        body: sfData,
+        mode: "no-cors",
+      }
+    );
+    alert("✅ Case created successfully!");
+    onNext(data);
+    } catch (error) {
+      console.error(err);
+      alert("❌ Failed to submit to Salesforce.");
+    }
+
     onNext(data);
   };
 
