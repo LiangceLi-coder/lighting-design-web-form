@@ -63,15 +63,19 @@ export default function Step1BasicInfo({ onNext }) {
         {/* Role */}
         <div>
           <label className="block text-sm font-medium text-[#13294B] mb-2">
-            I am a Haneco sales / Project contractor <span className="text-red-500">*</span>
+            Role <span className="text-red-500">*</span>
           </label>
           <select
             {...register("role", { required: true })}
             className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00B388]"
           >
             <option value="" className="text-gray-400">--- Select role ---</option>
-            <option value="Sales">Sales</option>
-            <option value="Project Contractor">Project Contractor</option>
+            <option value="Builder">Builder</option>
+            <option value="Homeowner">Homeowner</option>
+            <option value="Contractor">Contractor</option>
+            <option value="Wholesaler">Wholesaler</option>
+            <option value="Interior Designer">Interior Designer</option>
+            <option value="others">others</option>
           </select>
           {errors.role && <p className="text-red-500 text-sm mt-1">This field is required</p>}
         </div>
