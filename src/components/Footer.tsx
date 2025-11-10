@@ -11,7 +11,8 @@ const Footer = () => {
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     color:'#ffffff',
-                    alignItems:'center'
+                    alignItems:'center',
+                    // marginBottom:'0rem'
                 }}>
 
                 <p style={{
