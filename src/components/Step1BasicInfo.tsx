@@ -21,15 +21,28 @@ export default function Step1BasicInfo({ onNext }) {
     console.log("Step 1 Data:", data);
 
     const sfData = new URLSearchParams();
+
+    // 固定字段
     sfData.append("orgid", "00D6F000000FxAK");
     sfData.append("retURL", "https://www.google.com");
+
+    // 联系人信息
+    sfData.append("name", data.name || "Anonymous User");
     sfData.append("email", data.email);
     sfData.append("phone", data.phone);
+
+    // 案件信息
+    sfData.append("subject", data.subject || "Lighting Design Request");
+    sfData.append("description", data.description || "Lighting Design Test Description");
     sfData.append("priority", data.priority || "Medium");
-    sfData.append("00NOa000003THuz", data.role);
-    sfData.append("00NOa00000F6vOR", data.projectName);
-    sfData.append("00N6F00000HjgSL", data.wholesaler);
-    sfData.append("description", `Territory: ${data.territory}\nAddress: ${data.address?.line1}`);
+    sfData.append("status", data.status || "Open");
+
+    // 自定义字段
+    sfData.append("00NOa000003THuz", data.role);         // Role
+    sfData.append("00NOa00000F6vOR", data.projectName);  // Project Name
+    sfData.append("00N6F00000HjgSL", data.wholesaler);   // Wholesaler
+
+
     sfData.append("debug", "1");
     sfData.append("debugEmail", "liangceli@kasta.com.au");
 
@@ -85,10 +98,13 @@ export default function Step1BasicInfo({ onNext }) {
           <label className="block text-sm font-medium text-[#13294B] mb-2">Priority Case</label>
           <div className="flex items-center space-x-6">
             <label className="inline-flex items-center">
-              <input type="radio" value="Yes" {...register("priority")} className="mr-2" /> Yes
+              <input type="radio" value="High" {...register("priority")} className="mr-2" /> High
             </label>
             <label className="inline-flex items-center">
-              <input type="radio" value="No" {...register("priority")} className="mr-2" /> No
+              <input type="radio" value="Medium" {...register("priority")} className="mr-2" /> Medium
+            </label>
+            <label className="inline-flex items-center">
+              <input type="radio" value="Low" {...register("priority")} className="mr-2" /> Low
             </label>
           </div>
         </div>
