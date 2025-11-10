@@ -30,6 +30,8 @@ export default function Step1BasicInfo({ onNext }) {
     sfData.append("00NOa00000F6vOR", data.projectName);
     sfData.append("00N6F00000HjgSL", data.wholesaler);
     sfData.append("description", `Territory: ${data.territory}\nAddress: ${data.address?.line1}`);
+    sfData.append("debug", "1");
+    sfData.append("debugEmail", "andyli@kasta.com.au");
 
     try {
       await fetch(
