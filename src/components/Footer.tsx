@@ -6,13 +6,13 @@ const Footer = () => {
                 style={{
                     width:'100%',
                     height:'3rem',
-                    backgroundColor:'#00b388',
+                    // backgroundColor:'#00b388',
+                    background:'linear-gradient(to top, #00b389ff 20%, #6ff0ce 90%)',
                     display: 'flex',
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     color:'#ffffff',
                     alignItems:'center',
-                    // marginBottom:'0rem'
                 }}>
 
                 <p style={{
