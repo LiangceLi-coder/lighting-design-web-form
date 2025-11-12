@@ -87,7 +87,7 @@ body {
 /* 中间内容盒子 */
 .cover-box {
   /* background: #00b389ff; */
-  background: linear-gradient(to bottom, #00b389ff, #6ff0ce);
+  background: linear-gradient(to bottom, #00b389ff 20%, #6ff0ce 90%);
   height: 50%;
   width: 100%;
   display: flex;
