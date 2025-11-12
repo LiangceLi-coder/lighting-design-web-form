@@ -15,10 +15,7 @@ const Coverpage = () => {
         display:'flex',
         alignItems:'center',
         justifyContent:'center',
-                //  height:'100vh',
-                //  justifyItems:'center',
                  width:'100vw',
-                //  marginBottom:'4rem'
     }}>
         <div className="cover-box">
         <img className="cover-logo" alt="Haneco Logo" src="/Haneco_Logo_Mono.svg" />
