@@ -71,7 +71,13 @@ button:focus-visible {
 
 body {
   overflow-x: hidden;
-  overflow-y: hidden;
+  overflow-y: scroll;
+  scrollbar-width:none;
+  -ms-overflow-style: none;
+}
+
+body::-webkit-scrollbar {
+  display: none;
 }
 
 /* 整体容器 */
