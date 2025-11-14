@@ -71,6 +71,7 @@ button:focus-visible {
 
 body {
   overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 /* 整体容器 */
