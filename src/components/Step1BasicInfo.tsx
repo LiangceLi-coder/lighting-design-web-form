@@ -5,10 +5,10 @@ import { wholesalersData } from "./wholesalersData";
 export default function Step1BasicInfo({ onNext }) {
   const {
     register,
-    handleSubmit,
     setValue,
     control,
     formState: { errors },
+    trigger, // 手动触发验证 校验目的
   } = useFormContext();
 
   const selectedTerritory = useWatch({ control, name: "territory" });
@@ -17,69 +17,26 @@ export default function Step1BasicInfo({ onNext }) {
     setValue("wholesaler", "");
   }, [selectedTerritory, setValue]);
 
-  const submitHandler = async (data) => {
-    console.log("Step 1 Data:", data);
-
-    const sfData = new URLSearchParams();
-
-    // 固定字段 salesforce case的字段的网址中的代码
-    sfData.append("orgid", "00D6F000000FxAK");
-    sfData.append("retURL", "https://www.google.com");
-
-    // 联系人信息
-    sfData.append("00NOa000003T5B7", data.email);
-    sfData.append("ContactEmail", data.email);
-    sfData.append("Contact",data.contactName) //有问题
-    sfData.append("ContactPhone", data.phone);
-    
-
-    sfData.append("recordType", "012Oa000005RfCHIA0");
-
-    // 案件信息
-    sfData.append("subject", data.subject || "Lighting Design Request");
-    sfData.append("description", data.description || "Lighting Design Test Description");
-    sfData.append("priority", data.priority || "Medium"); //有
-    sfData.append("status", data.status || "Open");
-    sfData.append("00NOa00000GF91l", data.territory);
-    sfData.append("00NOa00000GFHz3",data.address.line1);
-    sfData.append("00NOa00000GFFpD",data.address.line2);
-    sfData.append("00NOa00000GFMjl",data.address.city);
-    sfData.append("00NOa00000GFESx",data.address.state);
-    sfData.append("00NOa00000GFKZu",data.address.postalCode);
-    sfData.append("00NOa00000GFNCn", data.address.country);
-
-
-    // 自定义字段
-    sfData.append("00NOa000003THuz", data.role);         // Role
-    sfData.append("00NOa00000F6vOR", data.projectName);  // Project Name
-    sfData.append("00N6F00000HjgSL", data.wholesaler);   // Wholesaler 
-
-
-    sfData.append("debug", "1");
-    sfData.append("debugEmail", "liangceli@kasta.com.au");
-
-    try {
-      await fetch(
-      "https://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8",
-      {
-        method: "POST",
-        body: sfData,
-        mode: "no-cors",
-      }
-    );
-    alert("✅ Case created successfully!");
-    onNext(data);
-    } catch (error) {
-      console.error(error);
-      alert("❌ Failed to submit to Salesforce.");
-    }
-    // onNext();
-  };
+  const handleNextClick = async () => {
+    const isValid = await trigger([
+      "role",
+      "territory",
+      "wholesaler",
+      "address.line1",
+      "phone",
+      "email",
+    ]);
+    if (!isValid) return;
+    onNext();
+  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex justify-center items-start py-12 px-4 sm:px-6 lg:px-8">
-      <form
+      {/* <form
         onSubmit={handleSubmit(submitHandler)}
+        className="space-y-8 w-full max-w-3xl bg-white p-10 rounded-2xl shadow-lg border border-gray-200"
+      > */}
+      <div
         className="space-y-8 w-full max-w-3xl bg-white p-10 rounded-2xl shadow-lg border border-gray-200"
       >
         <h2 className="text-3xl font-bold text-[#13294B] mb-6">Step 1 - Basic Project Information</h2>
@@ -220,11 +177,12 @@ export default function Step1BasicInfo({ onNext }) {
 
         {/* Next Button */}
         <div className="pt-4 text-right">
-          <button type="submit" className="bg-[#00B388] hover:bg-[#00a177] text-white font-semibold px-6 py-2 rounded-lg shadow-sm transition">
+          <button type="submit" onClick={handleNextClick} className="bg-[#00B388] hover:bg-[#00a177] text-white font-semibold px-6 py-2 rounded-lg shadow-sm transition">
             Next
           </button>
         </div>
-      </form>
+      {/* </form> */}
+      </div>
     </div>
   );
 }

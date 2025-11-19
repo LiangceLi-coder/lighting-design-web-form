@@ -25,6 +25,7 @@ const sportsAreaOptions = [
 export default function Step2Transport({ onNext, onBack }) {
   const {
     register,
+    trigger,
     handleSubmit,
     control,
     formState: { errors },
@@ -50,10 +51,24 @@ export default function Step2Transport({ onNext, onBack }) {
     onNext(data);
   };
 
+    const handleNextClick = async () => {
+    const isValid = await trigger([
+      "contractor",
+      "activeTender",
+      "salesEmployee",
+      "estimatedValue",
+      "sportsArea",
+      "salesTerritory",
+      "probability"
+    ]);
+    if (!isValid) return;
+    onNext();
+  }
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex justify-center items-start py-12 px-4 sm:px-6 lg:px-8">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
+      <div
+        // onSubmit={handleSubmit(handleNextClick)}
         className="space-y-8 w-full max-w-3xl bg-white p-10 rounded-2xl shadow-lg border border-gray-200"
       >
         <h2 className="text-3xl font-bold text-[#13294B] mb-6">Step 2 - Sales-related Information</h2>
@@ -149,8 +164,15 @@ export default function Step2Transport({ onNext, onBack }) {
             <label className="block text-sm font-medium text-[#13294B] mb-2">Sales Territory</label>
             <select {...register("salesTerritory")} className="w-full border border-gray-300 p-3 rounded-lg text-gray-700">
               <option value="" className="text-gray-400">Select option</option>
-              <option value="First Choice">First Choice</option>
-              <option value="Second Choice">Second Choice</option>
+              <option value="SA">SA</option>
+              <option value="VIC">VIC</option>
+              <option value="NSW">NSW</option>
+              <option value="QLD">QLD</option>
+              <option value="WA">WA</option>
+              <option value="TAS">TAS</option>
+              <option value="NT">NT</option>
+              <option value="ACT">ACT</option>
+              <option value="FNQ">FNQ</option>
             </select>
           </div>
           <div>
@@ -217,11 +239,11 @@ export default function Step2Transport({ onNext, onBack }) {
           <button type="button" onClick={onBack} className="bg-gray-300 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-400">
             Back
           </button>
-          <button type="submit" className="bg-[#00B388] hover:bg-[#00a177] text-white px-6 py-2 rounded-lg font-semibold">
+          <button type="submit" onClick={handleNextClick} className="bg-[#00B388] hover:bg-[#00a177] text-white px-6 py-2 rounded-lg font-semibold">
             Next
           </button>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

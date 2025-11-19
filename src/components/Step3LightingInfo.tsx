@@ -41,9 +41,120 @@ export default function Step3LightingDesign({ onBack, onNext }) {
     formState: { errors },
   } = useFormContext();
 
-  const nextStepHandler = (data) => {
-    console.log("Step 3 Data:", data);
-    onNext(data); // Proceed to PreSubmissionChecklist
+  // const submitHandler = (data) => {
+  //   console.log("Step 3 Data:", data);
+  //   onNext(data); // Proceed to PreSubmissionChecklist
+  // };
+    const submitHandler = async (data) => {
+    console.log("Step 1 Data:", data);
+
+    const sfData = new URLSearchParams();
+
+    // 固定字段 salesforce case的字段的网址中的代码
+    sfData.append("orgid", "00D6F000000FxAK");
+    sfData.append("retURL", "https://www.google.com");
+
+    // 联系人信息
+    sfData.append("00NOa000003T5B7", data.email);
+    sfData.append("ContactEmail", data.email);
+    sfData.append("Contact",data.contactName) //有问题
+    sfData.append("ContactPhone", data.phone);
+    
+
+    sfData.append("recordType", "012Oa000005RfCHIA0");
+
+    // 案件信息
+    sfData.append("subject", data.subject || "Lighting Design Request");
+    sfData.append("description", data.description || "Lighting Design Test Description");
+    sfData.append("priority", data.priority || "Medium"); //有
+    sfData.append("status", data.status || "Open");
+    sfData.append("00NOa00000GF91l", data.territory);
+    sfData.append("00NOa00000GFHz3",data.address.line1);
+    sfData.append("00NOa00000GFFpD",data.address.line2);
+    sfData.append("00NOa00000GFMjl",data.address.city);
+    sfData.append("00NOa00000GFESx",data.address.state);
+    sfData.append("00NOa00000GFKZu",data.address.postalCode);
+    sfData.append("00NOa00000GFNCn", data.address.country);
+
+    // Step 2 fields
+    sfData.append("00NOa00000GItzJ", data.activeTender);
+    sfData.append("00N6F00000HjgSL", data.contractor);
+    sfData.append("00NOa00000GIus9", data.probability);
+    // sfData.append("00NOa00000GIuNW", data.estimatedSupplyDate);
+    const rawDate = data.estimatedSupplyDate;
+
+    if (rawDate) {
+      const [year, month, day] = rawDate.split("-");
+      const sfDate = `${day}/${month}/${year}`;
+      sfData.append("00NOa00000GluNW", sfDate);
+    }
+
+    sfData.append("00NOa00000GIv8H", data.salesTerritory);
+    sfData.append("00NOa00000GIvGL", data.estimatedValue);
+    sfData.append("00NOa00000GIvLB", data.dropdown);
+
+
+    // 自定义字段
+    sfData.append("00NOa000003THuz", data.role);         // Role
+    sfData.append("00NOa00000F6vOR", data.projectName);  // Project Name
+    // sfData.append("00N6F00000HjgSL", data.wholesaler);   // Wholesaler 
+
+
+    sfData.append("debug", "1");
+    sfData.append("debugEmail", "liangceli@kasta.com.au");
+
+    // Step 3
+    // ====== 尺寸信息 Size of Area ======
+    sfData.append("SF_FIELD_ID_LENGTH",  data.size?.length  || "");   // 长度 Length (m)
+    sfData.append("SF_FIELD_ID_WIDTH",   data.size?.width   || "");   // 宽度 Width (m)
+    sfData.append("SF_FIELD_ID_HEIGHT",  data.size?.height  || "");   // 高度 Height (m)
+
+    // ====== 反射率 Surface Reflectances ======
+    sfData.append("SF_FIELD_ID_REF_CEILING", data.reflectance?.ceiling || "");  // Ceiling
+    sfData.append("SF_FIELD_ID_REF_WALL",    data.reflectance?.wall    || "");  // Wall
+    sfData.append("SF_FIELD_ID_REF_FLOOR",   data.reflectance?.floor   || "");  // Floor
+
+    // ====== 工作平面高度 Workplane Height ======
+    sfData.append("SF_FIELD_ID_WORKPLANE", data.workplaneHeight || ""); 
+    // 可能的值： "Floor", "Desk (0.7m AFFL)", "Bench (0.9m AFFL)", "Other"
+
+    // ====== 照度 Preferred Illuminance Level ======
+    sfData.append("SF_FIELD_ID_ILLUMINANCE", data.illuminance || "");  // LUX
+
+    // ====== 应急照明 Emergency Lighting ======
+    sfData.append("SF_FIELD_ID_EMERGENCY", data.emergency || "");      
+    // 可能的值："Yes" / "No"
+
+    // ====== 灯具型号 Preferred Luminaire Type(s) / Model(s) ======
+    sfData.append("SF_FIELD_ID_LUMINAIRE_TYPE", data.luminaireType || "");
+
+    // ====== Lighting Standards 是否需要标准 ======
+    sfData.append("SF_FIELD_ID_STANDARD_REQUIRED", data.standardRequired || ""); 
+    // 可能的值："Yes" / "No"
+
+    // ====== 控制方式 Control（必填） ======
+    sfData.append("SF_FIELD_ID_CONTROL", data.control || ""); 
+    // 可能的值："Non Dim", "Phase Cut", "Dali", "Specify Dali System onsite"
+
+    sfData.append("", data.otherInfo);
+
+
+    try {
+      await fetch(
+      "https://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8",
+      {
+        method: "POST",
+        body: sfData,
+        mode: "no-cors",
+      }
+    );
+    alert("✅ Case created successfully!");
+    onNext(data);
+    } catch (error) {
+      console.error(error);
+      alert("❌ Failed to submit to Salesforce.");
+    }
+    // onNext();
   };
 
   const { fields, append, remove } = useFieldArray({
@@ -53,7 +164,7 @@ export default function Step3LightingDesign({ onBack, onNext }) {
 
   const watchProducts = useWatch({ control, name: "products" });
   const selectedAreaType = useWatch({ control, name: "dropdown" });
-const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
 
 
 
@@ -80,7 +191,7 @@ const [uploadedFiles, setUploadedFiles] = useState([]);
     "None Provided"
     ];
   return (
-    <form onSubmit={handleSubmit(nextStepHandler)} className="space-y-8 max-w-4xl mx-auto bg-white p-10 rounded-2xl shadow-lg border border-gray-200">
+    <form onSubmit={handleSubmit(submitHandler)} className="space-y-8 max-w-4xl mx-auto bg-white p-10 rounded-2xl shadow-lg border border-gray-200">
       <h2 className="text-3xl font-bold text-[#13294B] mb-6">Step 3 - Lighting Design Requirements</h2>
       <h3 className="text-lg font-semibold text-[#13294B] mb-2">Size of Area</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -122,8 +233,8 @@ const [uploadedFiles, setUploadedFiles] = useState([]);
       </div>
       <h3 className="text-lg font-semibold text-[#13294B] mb-2">Preferred Luminaire Type(s) / Model(s)</h3>
       <input placeholder="" {...register("luminaireType")} className="w-full border border-gray-300 p-3 rounded-lg" />
-      <h3 className="text-lg font-semibold text-[#13294B] mb-2">Preferred Wholesaler and Contact</h3>
-      <input placeholder="" {...register("preferredWholesaler")} className="w-full border border-gray-300 p-3 rounded-lg" />
+      {/* <h3 className="text-lg font-semibold text-[#13294B] mb-2">Preferred Wholesaler and Contact</h3>
+      <input placeholder="" {...register("preferredWholesaler")} className="w-full border border-gray-300 p-3 rounded-lg" /> */}
 
       <div>
         <h3 className="text-lg font-semibold text-[#13294B] mb-2">Lighting Standards</h3>
