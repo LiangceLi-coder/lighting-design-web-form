@@ -22,25 +22,37 @@ export default function Step1BasicInfo({ onNext }) {
 
     const sfData = new URLSearchParams();
 
-    // 固定字段
+    // 固定字段 salesforce case的字段的网址中的代码
     sfData.append("orgid", "00D6F000000FxAK");
     sfData.append("retURL", "https://www.google.com");
 
     // 联系人信息
-    sfData.append("name", data.name || "Anonymous User");
-    sfData.append("email", data.email);
-    sfData.append("phone", data.phone);
+    sfData.append("00NOa000003T5B7", data.email);
+    sfData.append("ContactEmail", data.email);
+    sfData.append("Contact",data.contactName) //有问题
+    sfData.append("ContactPhone", data.phone);
+    
+
+    sfData.append("recordType", "012Oa000005RfCHIA0");
 
     // 案件信息
     sfData.append("subject", data.subject || "Lighting Design Request");
     sfData.append("description", data.description || "Lighting Design Test Description");
-    sfData.append("priority", data.priority || "Medium");
+    sfData.append("priority", data.priority || "Medium"); //有
     sfData.append("status", data.status || "Open");
+    sfData.append("00NOa00000GF91l", data.territory);
+    sfData.append("00NOa00000GFHz3",data.address.line1);
+    sfData.append("00NOa00000GFFpD",data.address.line2);
+    sfData.append("00NOa00000GFMjl",data.address.city);
+    sfData.append("00NOa00000GFESx",data.address.state);
+    sfData.append("00NOa00000GFKZu",data.address.postalCode);
+    sfData.append("00NOa00000GFNCn", data.address.country);
+
 
     // 自定义字段
     sfData.append("00NOa000003THuz", data.role);         // Role
     sfData.append("00NOa00000F6vOR", data.projectName);  // Project Name
-    sfData.append("00N6F00000HjgSL", data.wholesaler);   // Wholesaler
+    sfData.append("00N6F00000HjgSL", data.wholesaler);   // Wholesaler 
 
 
     sfData.append("debug", "1");
@@ -58,11 +70,10 @@ export default function Step1BasicInfo({ onNext }) {
     alert("✅ Case created successfully!");
     onNext(data);
     } catch (error) {
-      console.error(err);
+      console.error(error);
       alert("❌ Failed to submit to Salesforce.");
     }
-
-    onNext(data);
+    // onNext();
   };
 
   return (
@@ -149,10 +160,28 @@ export default function Step1BasicInfo({ onNext }) {
           {errors.wholesaler && <p className="text-red-500 text-sm mt-1">Wholesaler is required</p>}
         </div>
 
+        {/* Contact Name */}
+        <div>
+          <label>Contact Name</label>
+          <input type="text" {...register("contactName")} className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00B388]" />
+        </div>
+
         {/* Project Name */}
         <div>
           <label className="block text-sm font-medium text-[#13294B] mb-2">Project Name</label>
           <input type="text" {...register("projectName")} className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00B388]" />
+        </div>
+
+        {/* description */}
+        <div>
+          <label className="block text-sm font-medium text-[#13294B] mb-2">Description</label>
+          <textarea
+            {...register("description")}
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00B388]"
+            rows={4}
+            placeholder="Type description here..."
+          />
+
         </div>
 
         {/* Address */}
