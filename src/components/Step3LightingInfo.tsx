@@ -68,7 +68,7 @@ export default function Step3LightingDesign({ onBack, onNext }) {
     sfData.append("description", data.description || "Lighting Design Test Description");
     sfData.append("priority", data.priority || "Medium"); //有
     sfData.append("status", data.status || "Open");
-    sfData.append("00NOa00000GF91l", data.territory);
+    // sfData.append("00NOa00000GF91l", data.territory);
     sfData.append("00NOa00000GFHz3",data.address.line1);
     sfData.append("00NOa00000GFFpD",data.address.line2);
     sfData.append("00NOa00000GFMjl",data.address.city);
@@ -105,38 +105,38 @@ export default function Step3LightingDesign({ onBack, onNext }) {
 
     // Step 3
     // ====== 尺寸信息 Size of Area ======
-    sfData.append("SF_FIELD_ID_LENGTH",  data.size?.length  || "");   // 长度 Length (m)
-    sfData.append("SF_FIELD_ID_WIDTH",   data.size?.width   || "");   // 宽度 Width (m)
-    sfData.append("SF_FIELD_ID_HEIGHT",  data.size?.height  || "");   // 高度 Height (m)
+    sfData.append("00NOa00000GIYGZ",  data.size?.length  || "");   // 长度 Length (m)
+    sfData.append("00NOa00000GJFBp",   data.size?.width   || "");   // 宽度 Width (m)
+    sfData.append("00NOa00000GJFF3",  data.size?.height  || "");   // 高度 Height (m)
 
     // ====== 反射率 Surface Reflectances ======
-    sfData.append("SF_FIELD_ID_REF_CEILING", data.reflectance?.ceiling || "");  // Ceiling
-    sfData.append("SF_FIELD_ID_REF_WALL",    data.reflectance?.wall    || "");  // Wall
-    sfData.append("SF_FIELD_ID_REF_FLOOR",   data.reflectance?.floor   || "");  // Floor
+    sfData.append("00NOa00000GJFOj", data.reflectance?.ceiling || "");  // Ceiling
+    sfData.append("00NOa00000GJFVB",    data.reflectance?.wall    || "");  // Wall
+    sfData.append("00NOa00000GJFer",   data.reflectance?.floor   || "");  // Floor
 
     // ====== 工作平面高度 Workplane Height ======
-    sfData.append("SF_FIELD_ID_WORKPLANE", data.workplaneHeight || ""); 
+    sfData.append("00NOa00000GJFuz", data.workplaneHeight || ""); 
     // 可能的值： "Floor", "Desk (0.7m AFFL)", "Bench (0.9m AFFL)", "Other"
 
     // ====== 照度 Preferred Illuminance Level ======
-    sfData.append("SF_FIELD_ID_ILLUMINANCE", data.illuminance || "");  // LUX
+    sfData.append("00NOa00000GJH7B", data.illuminance || "");  // LUX
 
     // ====== 应急照明 Emergency Lighting ======
-    sfData.append("SF_FIELD_ID_EMERGENCY", data.emergency || "");      
+    sfData.append("00NOa00000GJGz7", data.emergency || "");      
     // 可能的值："Yes" / "No"
 
     // ====== 灯具型号 Preferred Luminaire Type(s) / Model(s) ======
-    sfData.append("SF_FIELD_ID_LUMINAIRE_TYPE", data.luminaireType || "");
+    sfData.append("00NOa00000GJHQX", data.luminaireType || "");
 
     // ====== Lighting Standards 是否需要标准 ======
-    sfData.append("SF_FIELD_ID_STANDARD_REQUIRED", data.standardRequired || ""); 
+    sfData.append("00NOa00000GJG7t", data.standardRequired || ""); 
     // 可能的值："Yes" / "No"
 
     // ====== 控制方式 Control（必填） ======
-    sfData.append("SF_FIELD_ID_CONTROL", data.control || ""); 
+    sfData.append("00NOa00000GJGPd", data.control || ""); 
     // 可能的值："Non Dim", "Phase Cut", "Dali", "Specify Dali System onsite"
 
-    sfData.append("", data.otherInfo);
+    sfData.append("00NOa00000GJGe9", data.otherInfo);
 
 
     try {

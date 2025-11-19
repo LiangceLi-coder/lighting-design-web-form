@@ -78,7 +78,7 @@ export default function Step1BasicInfo({ onNext }) {
         </div>
 
         {/* Territory */}
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-[#13294B] mb-2">
             Territory <span className="text-red-500">*</span>
           </label>
@@ -92,10 +92,10 @@ export default function Step1BasicInfo({ onNext }) {
             ))}
           </select>
           {errors.territory && <p className="text-red-500 text-sm mt-1">Territory is required</p>}
-        </div>
+        </div> */}
 
         {/* Wholesaler */}
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-[#13294B] mb-2">
             Wholesaler <span className="text-red-500">*</span>
           </label>
@@ -115,7 +115,7 @@ export default function Step1BasicInfo({ onNext }) {
                 ))}
             </select>
           {errors.wholesaler && <p className="text-red-500 text-sm mt-1">Wholesaler is required</p>}
-        </div>
+        </div> */}
 
         {/* Contact Name */}
         <div>
