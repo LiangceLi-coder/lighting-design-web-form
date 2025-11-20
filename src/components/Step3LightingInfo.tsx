@@ -37,14 +37,35 @@ export default function Step3LightingDesign({ onBack, onNext }) {
     register,
     handleSubmit,
     control,
+    trigger,
     setValue,
     formState: { errors },
   } = useFormContext();
 
-  const submitHandler = (data) => {
-    console.log("Step 3 Data:", data);
-    onNext(data); // Proceed to PreSubmissionChecklist
-  };
+  const submitHandler = async () => {
+    const isValid = await trigger([
+      "size.length",
+      "size.width",
+      "size.height",
+      "reflectance.ceiling",
+      "reflectance.wall",
+      "reflectance.floor",
+      "workplaneHeight",
+      "illuminance",
+      "emergency",
+      "luminaireType",
+      "standardRequired",
+      "control",
+      "otherInfo",
+      // "attachedDrawings",
+      // "",
+      // "",
+    ]);
+    console.log("isValid", isValid);
+    
+    if (!isValid) return;
+    onNext();
+  }
 
   const { fields, append, remove } = useFieldArray({
     control,

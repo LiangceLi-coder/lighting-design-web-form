@@ -27,7 +27,7 @@ export default function PreSubmissionChecklist({ onBack, onSubmit }) {
   };
 
   const submitHandler = async (data) => {
-    console.log("Step 1 Data:", data);
+    console.log("All Data:", data);
 
     const sfData = new URLSearchParams();
 
@@ -36,10 +36,10 @@ export default function PreSubmissionChecklist({ onBack, onSubmit }) {
     sfData.append("retURL", "https://www.google.com");
 
     // 联系人信息
-    sfData.append("00NOa000003T5B7", data.email);
-    sfData.append("ContactEmail", data.email);
-    sfData.append("Contact",data.contactName) //有问题
-    sfData.append("ContactPhone", data.phone);
+    // sfData.append("00NOa000003T5B7", data.email);
+    sfData.append("email", data.email);
+    sfData.append("name",data.contactName) 
+    sfData.append("phone", data.phone);
     
 
     sfData.append("recordType", "012Oa000005RfCHIA0");
@@ -130,12 +130,12 @@ export default function PreSubmissionChecklist({ onBack, onSubmit }) {
       }
     );
     alert("✅ Case created successfully!");
-    // onNext(data);
+    
     } catch (error) {
       console.error(error);
       alert("❌ Failed to submit to Salesforce.");
     }
-    // onNext();
+    
   };
 
   return (
@@ -171,9 +171,7 @@ export default function PreSubmissionChecklist({ onBack, onSubmit }) {
             Back
           </button>
           <button
-            type="button"
-            onClick={() => onSubmit(formData)}
-            disabled={false}
+            type="submit"
             className="bg-[#00B388] hover:bg-[#00a177] text-white px-6 py-2 rounded-lg font-semibold"
           >
             Submit

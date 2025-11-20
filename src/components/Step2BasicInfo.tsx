@@ -46,10 +46,10 @@ export default function Step2Transport({ onNext, onBack }) {
     setIsExistingOpportunity(opportunityExists === "Yes");
   }, [opportunityExists]);
 
-  const onSubmit = (data) => {
-    console.log("Step 2 Data:", data);
-    onNext(data);
-  };
+  // const onSubmit = (data) => {
+  //   console.log("Step 2 Data:", data);
+  //   onNext(data);
+  // };
 
     const handleNextClick = async () => {
     const isValid = await trigger([
@@ -59,7 +59,8 @@ export default function Step2Transport({ onNext, onBack }) {
       "estimatedValue",
       "sportsArea",
       "salesTerritory",
-      "probability"
+      "probability",
+      "estimatedSupplyDate",
     ]);
     if (!isValid) return;
     onNext();
