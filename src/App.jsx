@@ -2,7 +2,7 @@ import MultiStepForm from './pages/MultiStepForm';
 import Coverpage from './components/CoverPage';
 import {Element} from 'react-scroll';
 import Footer from './components/Footer';
-import FinishPage from './components/FinishPage';
+// import FinishPage from './pages/FinishPage';
 
 function App() {
   return (
@@ -12,7 +12,7 @@ function App() {
         <MultiStepForm />
       </Element>
       <Footer />
-      {/* <FinishPage /> */}
+      {/* <FinishPage/> */}
     </div>
   );
 }

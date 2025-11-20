@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
+import Step1BasicInfo from "./Step1BasicInfo";
+import FinishPage from "../pages/FinishPage";
 
 const checklistFields = [
   { label: "Requested Date", name: "requestedDate" },
@@ -20,6 +22,11 @@ const checklistFields = [
 export default function PreSubmissionChecklist({ onBack, onSubmit }) {
   const { getValues,handleSubmit } = useFormContext();
   const formData = getValues();
+
+  const [submitted, setSubmitted] = useState(false);
+  if(submitted) {
+    window.location.href = "/FinishPage";
+  }
 
   const getYesNo = (value) => {
     if (Array.isArray(value)) return value.length > 0 ? "Y" : "N";
@@ -130,6 +137,7 @@ export default function PreSubmissionChecklist({ onBack, onSubmit }) {
       }
     );
     alert("✅ Case created successfully!");
+    setSubmitted(true);
     
     } catch (error) {
       console.error(error);
