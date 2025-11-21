@@ -26,7 +26,7 @@ export default function MultiStepForm() {
       estimatedSupplyDate: "",
       dropdown: "",
       size: { length: "", width: "", height: "" },
-      reflectance: { ceiling: "", wall: "", floor: "" },
+      reflectance: { ceiling: "70", wall: "50", floor: "20" },
       workplaneHeight: "",
       illuminance: "",
       emergency: "",

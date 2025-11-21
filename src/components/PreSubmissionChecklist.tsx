@@ -43,10 +43,11 @@ export default function PreSubmissionChecklist({ onBack, onSubmit }) {
     sfData.append("retURL", "https://www.google.com");
 
     // 联系人信息
-    // sfData.append("00NOa000003T5B7", data.email);
-    sfData.append("email", data.email);
-    sfData.append("name",data.contactName) 
-    sfData.append("phone", data.phone);
+    sfData.append("SuppliedEmail", data.email);
+        // sfData.append("ContactEmail", data.email);
+    sfData.append("SuppliedName",data.contactName) 
+    sfData.append("	SuppliedPhone", data.phone);
+        // sfData.append("ContactPhone", data.phone);
     
 
     sfData.append("recordType", "012Oa000005RfCHIA0");

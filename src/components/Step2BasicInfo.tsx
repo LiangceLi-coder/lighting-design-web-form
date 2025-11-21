@@ -20,7 +20,22 @@ const sportsAreaOptions = [
   "Squash",
   "Netball/Basketball",
   "Other Areas [PLEASE SPECIFY]",
+
+  // Newly added from Layout
+  "Commercial Office – Ceiling",
+  "Commercial Office – Task",
+  "Commercial – Common Areas",
+  "Multi-Residential",
+  "Industrial – High Bay",
+  "Industrial – Low Bay",
+  "Education – Classroom",
+  "Education – Lecture Theatres",
+  "Medical – Clean Room",
+  "Sports Lighting – Recreational",
+  "Sports Lighting – Training",
+  "Sports Lighting – Professional"
 ];
+
 
 export default function Step2Transport({ onNext, onBack }) {
   const {
@@ -220,7 +235,7 @@ export default function Step2Transport({ onNext, onBack }) {
         {areaTypesWithSubSelection.includes(selectedAreaType) && (
           <div>
             <label className="block text-sm font-medium text-[#13294B] mb-2">
-              Please select sports area type <span className="text-red-500">*</span>
+              LDR Category <span className="text-red-500">*</span>
             </label>
             <select
               {...register("sportsArea", { required: true })}

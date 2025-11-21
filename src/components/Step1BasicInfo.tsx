@@ -44,7 +44,7 @@ export default function Step1BasicInfo({ onNext }) {
         {/* Role */}
         <div>
           <label className="block text-sm font-medium text-[#13294B] mb-2">
-            Role <span className="text-red-500">*</span>
+            Request Source <span className="text-red-500">*</span>
           </label>
           <select
             {...register("role", { required: true })}
@@ -162,18 +162,18 @@ export default function Step1BasicInfo({ onNext }) {
         </div>
 
         {/* Phone */}
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-[#13294B] mb-2">Contact Phone <span className="text-red-500">*</span></label>
           <input type="tel" {...register("phone", { required: true })} className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00B388]" />
           {errors.phone && <p className="text-red-500 text-sm mt-1">This field is required</p>}
-        </div>
+        </div> */}
 
         {/* Email */}
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-[#13294B] mb-2">Contact Email <span className="text-red-500">*</span></label>
           <input type="email" {...register("email", { required: true })} className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00B388]" />
           {errors.email && <p className="text-red-500 text-sm mt-1">This field is required</p>}
-        </div>
+        </div> */}
 
         {/* Next Button */}
         <div className="pt-4 text-right">
