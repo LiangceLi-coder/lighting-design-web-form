@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
-import Step1BasicInfo from "./Step1BasicInfo";
-import FinishPage from "../pages/FinishPage";
 
 const checklistFields = [
   { label: "Requested Date", name: "requestedDate" },
@@ -33,20 +31,33 @@ export default function PreSubmissionChecklist({ onBack, onSubmit }) {
     return value ? "Y" : "N";
   };
 
-  const submitHandler = async () => {
-    const formData = getValues();
-    console.log("All Data from all steps:", formData);
-    try {
-      const res = await fetch(
-      "http://localhost:4000/api/lighting-design",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      }
-    );
+const submitHandler = async () => {
+  const allData = getValues();
+  console.log("All Data from all steps:", allData);
+
+  // 假设上一步用 setValue("drawingFiles", files) 存的
+  const files = allData.drawingFiles || [];
+
+  // 不要把文件对象放进 JSON 里，先从对象里剥离出来
+  const { drawingFiles, ...rest } = allData;
+
+  const fd = new FormData();
+
+  // 普通字段全部打进 jsonData，后端会 JSON.parse
+  fd.append("jsonData", JSON.stringify(rest));
+
+  // 把文件逐个 append 到 drawingFiles
+  if (Array.isArray(files)) {
+    files.forEach((file: File) => {
+      fd.append("drawingFiles", file);
+    });
+  }
+
+  try {
+    const res = await fetch("http://localhost:4000/api/lighting-design", {
+      method: "POST",
+      body: fd,
+    });
 
     const result = await res.json();
     if (!result.success) {
@@ -57,91 +68,12 @@ export default function PreSubmissionChecklist({ onBack, onSubmit }) {
 
     alert("✅ Successfully sent data to backend! Case Id: " + result.caseId);
     setSubmitted(true);
-    } catch (error) {
-      console.error(error);
-      alert("❌ Failed to send data to backend.");
-    }
-    // const sfData = new URLSearchParams();
+  } catch (error) {
+    console.error(error);
+    alert("❌ Failed to send data to backend.");
+  }
+};
 
-    // // 固定字段 salesforce case的字段的网址中的代码
-    // sfData.append("orgid", "00D6F000000FxAK");
-    // sfData.append("retURL", "https://www.google.com");
-
-
-
-
-
- 
-    // // sfData.append("00NOa00000GF91l", data.territory);
-    // sfData.append("00NOa00000GFHz3",data.address.line1);
-    // sfData.append("00NOa00000GFFpD",data.address.line2);
-    // sfData.append("00NOa00000GFMjl",data.address.city);
-    // sfData.append("00NOa00000GFESx",data.address.state);
-    // sfData.append("00NOa00000GFKZu",data.address.postalCode);
-    // sfData.append("00NOa00000GFNCn", data.address.country);
-
-    // // Step 2 fields
-    // sfData.append("00NOa00000GItzJ", data.activeTender);
-    // sfData.append("00N6F00000HjgSL", data.contractor);
-    // sfData.append("00NOa00000GIus9", data.probability);
-    // // sfData.append("00NOa00000GIuNW", data.estimatedSupplyDate);
-    // const rawDate = data.estimatedSupplyDate;
-
-    // if (rawDate) {
-    //   const [year, month, day] = rawDate.split("-");
-    //   const sfDate = `${day}/${month}/${year}`;
-    //   sfData.append("00NOa00000GluNW", sfDate);
-    // }
-
-    // sfData.append("00NOa00000GIv8H", data.salesTerritory);
-    // sfData.append("00NOa00000GIvGL", data.estimatedValue);
-    // sfData.append("00NOa00000GIvLB", data.dropdown);
-
-
-    // // 自定义字段
-    // sfData.append("00NOa000003THuz", data.role);         // Role
-    // sfData.append("00NOa00000F6vOR", data.projectName);  // Project Name
-    // // sfData.append("00N6F00000HjgSL", data.wholesaler);   // Wholesaler 
-
-
-    // sfData.append("debug", "1");
-    // sfData.append("debugEmail", "liangceli@kasta.com.au");
-
-    // // Step 3
-    // // ====== 尺寸信息 Size of Area ======
-    // sfData.append("00NOa00000GIYGZ",  data.size?.length  || "");   // 长度 Length (m)
-    // sfData.append("00NOa00000GJFBp",   data.size?.width   || "");   // 宽度 Width (m)
-    // sfData.append("00NOa00000GJFF3",  data.size?.height  || "");   // 高度 Height (m)
-
-    // // ====== 反射率 Surface Reflectances ======
-    // sfData.append("00NOa00000GJFOj", data.reflectance?.ceiling || "");  // Ceiling
-    // sfData.append("00NOa00000GJFVB",    data.reflectance?.wall    || "");  // Wall
-    // sfData.append("00NOa00000GJFer",   data.reflectance?.floor   || "");  // Floor
-
-    // // ====== 工作平面高度 Workplane Height ======
-    // sfData.append("00NOa00000GJFuz", data.workplaneHeight || ""); 
-    // // 可能的值： "Floor", "Desk (0.7m AFFL)", "Bench (0.9m AFFL)", "Other"
-
-    // // ====== 照度 Preferred Illuminance Level ======
-    // sfData.append("00NOa00000GJH7B", data.illuminance || "");  // LUX
-
-    // // ====== 应急照明 Emergency Lighting ======
-    // sfData.append("00NOa00000GJGz7", data.emergency || "");      
-    // // 可能的值："Yes" / "No"
-
-    // // ====== 灯具型号 Preferred Luminaire Type(s) / Model(s) ======
-    // sfData.append("00NOa00000GJHQX", data.luminaireType || "");
-
-    // // ====== Lighting Standards 是否需要标准 ======
-    // sfData.append("00NOa00000GJG7t", data.standardRequired || ""); 
-    // // 可能的值："Yes" / "No"
-
-    // // ====== 控制方式 Control（必填） ======
-    // sfData.append("00NOa00000GJGPd", data.control || ""); 
-    // // 可能的值："Non Dim", "Phase Cut", "Dali", "Specify Dali System onsite"
-
-    // sfData.append("00NOa00000GJGe9", data.otherInfo);
-  };
 
   return (
     <form onSubmit={handleSubmit(submitHandler)} className="min-h-screen bg-[#F8FAFC] flex justify-center py-12 px-4 sm:px-6 lg:px-8">
