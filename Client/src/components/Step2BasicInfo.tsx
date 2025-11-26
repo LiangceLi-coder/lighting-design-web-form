@@ -220,10 +220,7 @@ export default function Step2Transport({ onNext, onBack }) {
                   Close Date<span className="text-red-500"> *</span>
                 </label>
                 <input
-                  type="date"
-                  {...register("closedate", { required: true })}
-                  className="w-full border border-gray-300 p-3 rounded-lg"
-                />
+                  type="date" {...register("closedate", { required: true })} className="w-full border border-gray-300 p-3 rounded-lg"/>
                 {errors.closedate && (
                   <p className="text-red-500 text-sm">This field is required</p>
                 )}
@@ -264,10 +261,6 @@ export default function Step2Transport({ onNext, onBack }) {
           <div>
             <label className="block text-sm font-medium text-[#13294B] mb-2">Sales Employee</label>
             <input type="text" {...register("salesEmployee")} className="w-full border border-gray-300 p-3 rounded-lg" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-[#13294B] mb-2">Probability (%)</label>
-            <input type="number" min={0} max={100} {...register("probability")} className="w-full border border-gray-300 p-3 rounded-lg" />
           </div>
         </div> */}
 

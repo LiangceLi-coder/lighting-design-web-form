@@ -13,6 +13,14 @@ app.use(cors({ origin: "http://localhost:5173" }));
 // 解析 JSON（如果以后有别的纯 JSON 接口也能用）
 app.use(express.json());
 
+function normalizeSfDate(value) {
+  if (!value) return undefined;
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return undefined;
+  return d.toISOString().slice(0, 10); // 'YYYY-MM-DD'
+}
+
+
 // ---------- 工具函数：根据 products 更新 Case.Selected_Products__c ----------
 // 方案 B：把多条产品信息拼成多行长文本，写入 Case 上的 Long Text 字段 Selected_Products__c
 async function updateCaseSelectedProducts(conn, caseId, productsRaw) {
@@ -32,30 +40,30 @@ async function updateCaseSelectedProducts(conn, caseId, productsRaw) {
     .join(",");
 
   // 从 Product_ATP__c 里把需要展示的字段查出来
-  // 这里用的是你上面确认过的字段：Item_No4__c, Name, Status2__c
   const result = await conn.query(`
     SELECT Item_No4__c, Name, Status2__c
     FROM Product_ATP__c
     WHERE Item_No4__c IN (${inClause})
   `);
 
-  const atpMap = new Map(
-    result.records.map((r) => [r.Item_No4__c, r])
-  );
+  const atpMap = new Map(result.records.map((r) => [r.Item_No4__c, r]));
 
   // 按前端 products 的顺序拼接多行文本
   const lines = products
     .map((p, idx) => {
       const row = atpMap.get(p.itemNo);
       if (!row) return null;
-
-      // 想显示哪些字段就改这里（目前：SAP Item | Name | Status）
-      return `${idx + 1}. ${row.Item_No4__c} | ${row.Name || ""} | ${row.Status2__c || ""}`;
+      // 显示：SAP Item | Name | Status
+      return `${idx + 1}. ${row.Item_No4__c} | ${row.Name || ""} | ${
+        row.Status2__c || ""
+      }`;
     })
     .filter(Boolean);
 
   if (!lines.length) {
-    console.log("[API] 未找到匹配的 Product_ATP__c 记录，跳过更新 Selected_Products__c");
+    console.log(
+      "[API] 未找到匹配的 Product_ATP__c 记录，跳过更新 Selected_Products__c"
+    );
     return;
   }
 
@@ -137,7 +145,44 @@ app.post(
       const conn = await getSFConnection();
       console.log("[SF] Logged in, instance:", conn.instanceUrl);
 
-      // 3. 组装 Case 字段（按你之前的 mapping 来）
+      // 3.（可选）创建 Opportunity：只在 linkToOpportunity=Yes 且 opportunityExists=No 时创建新的
+      let createdOpportunityId = null;
+
+      if (
+        data.linkToOpportunity === "Yes" &&
+        data.opportunityExists === "No"
+      ) {
+        const oppBody = {
+          Name: data.opportunityname, // Opportunity Name
+          CloseDate: data.closedate, // YYYY-MM-DD（前端 date input）
+          StageName: data.stage, // Stage（必须是 Stage picklist 里的值）
+          Probability: data.probability
+            ? Number(data.probability)
+            : undefined, // 0-100
+          Business_Division__c: data.businessdivision,
+        };
+
+        console.log("[API] 即将创建 Opportunity，body:", oppBody);
+
+
+        const createdOppo = await conn
+          .sobject("Opportunity")
+          .create(oppBody);
+
+        if (!createdOppo.success) {
+          console.error("[API] 创建 Opportunity 失败:", createdOppo);
+          return res.status(500).json({
+            success: false,
+            message: "Failed to create Opportunity",
+            details: createdOppo,
+          });
+        }
+
+        createdOpportunityId = createdOppo.id;
+        console.log("[API] 成功创建 Opportunity", createdOpportunityId);
+      }
+
+      // 4. 组装 Case 字段（按你之前的 mapping 来）
       const caseBody = {
         RecordTypeId: "012Oa000005Rn6bIAC", // Lighting Design Case
 
@@ -163,8 +208,7 @@ app.post(
         Active_Tender__c: data.activeTender,
         Contractor__c: data.contractor,
         Probability__c: data.probability,
-        // 这里前端传 YYYY-MM-DD 就行
-        Estimated_Supply_Date__c: data.estimatedSupplyDate,
+        Estimated_Supply_Date__c: data.estimatedSupplyDate, // YYYY-MM-DD
 
         Sales_Territory__c: data.salesTerritory,
         Estimated_Value__c: data.estimatedValue,
@@ -205,11 +249,22 @@ app.post(
 
         // Other Info
         Other_Information__c: data.otherInfo || "",
+
+        // Opportunity__c: null,
       };
 
-      console.log("[API] 即将创建 Case，body:", caseBody);
+      // 如果上面创建了 Opportunity，就把它 link 到 Case 上
+      if (createdOpportunityId) {
+         caseBody.Opportunity__c = createdOpportunityId;
+      }
 
-      // 4. 创建 Case
+      console.log("[API] 即将创建 Case，body:", caseBody);
+      console.log("[DEBUG] successful date form", data.estimatedValue);
+      console.log("[DEBUG] successful date form type",typeof(data.estimatedSupplyDate));
+      
+
+
+      // 5. 创建 Case
       const createdCase = await conn.sobject("Case").create(caseBody);
 
       if (!createdCase.success) {
@@ -224,14 +279,14 @@ app.post(
       const caseId = createdCase.id;
       console.log("[API] Case 创建成功:", caseId);
 
-      // ⭐ 新增：用选中的 products 更新 Case.Selected_Products__c
+      // 6. 用选中的 products 更新 Case.Selected_Products__c
       try {
         await updateCaseSelectedProducts(conn, caseId, data.products);
       } catch (e) {
         console.error("[API] 更新 Selected_Products__c 失败:", e);
       }
 
-      // 5. 把文件挂在 Case 上（中间那列 Attachments / Files 会显示）
+      // 7. 把文件挂在 Case 上（中间那列 Attachments / Files 会显示）
       for (const file of files) {
         console.log("[API] 正在上传文件:", file.originalname);
 
@@ -243,7 +298,7 @@ app.post(
         });
       }
 
-      // 6. 返回
+      // 8. 返回
       return res.json({
         success: true,
         caseId,
