@@ -145,74 +145,119 @@ export default function Step2Transport({ onNext, onBack }) {
         {/* Conditional Opportunity Fields */}
         {showOpportunityFields && (
           <div className="space-y-4">
+            {/* 先选：这个 Opportunity 是否已存在 */}
             <div>
-              <label className="block text-sm font-medium text-[#13294B] mb-2">The opportunity is existing</label>
+              <label className="block text-sm font-medium text-[#13294B] mb-2">
+                The opportunity is existing
+              </label>
               <select
                 {...register("opportunityExists", { required: true })}
                 className="w-full border border-gray-300 p-3 rounded-lg text-gray-700"
               >
-                <option value="" className="text-gray-400">Select option</option>
+                <option value="" className="text-gray-400">
+                  Select option
+                </option>
                 <option value="Yes">Yes</option>
-                <option value="No">No, I want to create a new opportunity automatically</option>
+                <option value="No">
+                  No, I want to create a new opportunity automatically
+                </option>
               </select>
-               {errors.opportunityExists && <p className="text-red-500 text-sm">This field is required</p>}
+              {errors.opportunityExists && (
+                <p className="text-red-500 text-sm">This field is required</p>
+              )}
             </div>
 
-            {isExistingOpportunity && (
+            {/* 情况一：已有 Opportunity -> 只让填 Opportunity ID */}
+            {opportunityExists === "Yes" && (
               <div>
-                <label className="block text-sm font-medium text-[#13294B] mb-2">Please input Opportunity ID</label>
+                <label className="block text-sm font-medium text-[#13294B] mb-2">
+                  Please input Opportunity ID
+                </label>
                 <input
                   type="text"
                   {...register("opportunityId", { required: true })}
                   className="w-full border border-gray-300 p-3 rounded-lg"
                 />
+                {errors.opportunityId && (
+                  <p className="text-red-500 text-sm">This field is required</p>
+                )}
               </div>
             )}
 
-            {!isExistingOpportunity && (
+            {/* 情况二：要自动创建新的 Opportunity -> 显示这几个必填字段 */}
+            {opportunityExists === "No" && (
               <div>
-                <label className="block text-sm font-medium text-[#13294B] mb-2">Business Division<span className="text-red-500"> *</span></label>
+                <label className="block text-sm font-medium text-[#13294B] mb-2">
+                  Business Division<span className="text-red-500"> *</span>
+                </label>
                 <select
                   {...register("businessdivision", { required: true })}
                   className="w-full border border-gray-300 p-3 rounded-lg text-gray-700"
                 >
                   {businessdivision.map((division) => (
-                    <option key={division} value={division}>{division}</option>
+                    <option key={division} value={division}>
+                      {division}
+                    </option>
                   ))}
                 </select>
-                {errors.businessdivision && <p className="text-red-500 text-sm">This field is required</p>}
+                {errors.businessdivision && (
+                  <p className="text-red-500 text-sm">This field is required</p>
+                )}
 
-                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">Opportunity Name<span className="text-red-500"> *</span></label>
+                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">
+                  Opportunity Name<span className="text-red-500"> *</span>
+                </label>
                 <input
                   type="text"
                   {...register("opportunityname", { required: true })}
                   className="w-full border border-gray-300 p-3 rounded-lg"
                 />
-                {errors.opportunityname && <p className="text-red-500 text-sm">This field is required</p>}
+                {errors.opportunityname && (
+                  <p className="text-red-500 text-sm">This field is required</p>
+                )}
 
-                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">Close Date<span className="text-red-500"> *</span></label>
+                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">
+                  Close Date<span className="text-red-500"> *</span>
+                </label>
                 <input
                   type="date"
                   {...register("closedate", { required: true })}
                   className="w-full border border-gray-300 p-3 rounded-lg"
                 />
-                {errors.closedate && <p className="text-red-500 text-sm">This field is required</p>}
+                {errors.closedate && (
+                  <p className="text-red-500 text-sm">This field is required</p>
+                )}
 
-                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">Stage<span className="text-red-500"> *</span></label>
+                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">
+                  Stage<span className="text-red-500"> *</span>
+                </label>
                 <input
                   type="text"
                   {...register("stage", { required: true })}
                   className="w-full border border-gray-300 p-3 rounded-lg"
                 />
-                {errors.stage && <p className="text-red-500 text-sm">This field is required</p>}
+                {errors.stage && (
+                  <p className="text-red-500 text-sm">This field is required</p>
+                )}
 
-                 <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">Probability (%)<span className="text-red-500"> *</span></label>
-                  <input type="number" min={0} max={100} {...register("probability")} className="w-full border border-gray-300 p-3 rounded-lg" />
-                  {errors.probability && <p className="text-red-500 text-sm">This field is required</p>}
+                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">
+                  Probability (%)<span className="text-red-500"> *</span>
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  {...register("probability", { required: true })}
+                  className="w-full border border-gray-300 p-3 rounded-lg"
+                />
+                {errors.probability && (
+                  <p className="text-red-500 text-sm">This field is required</p>
+                )}
               </div>
             )}
           </div>
         )}
+
 
         {/* Sales Employee and Probability */}
         {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
