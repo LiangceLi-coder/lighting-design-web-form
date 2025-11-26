@@ -13,39 +13,90 @@ app.use(cors({ origin: "http://localhost:5173" }));
 // 解析 JSON（如果以后有别的纯 JSON 接口也能用）
 app.use(express.json());
 
-app.get(
-  "/api/products",
-  async (req,res) => {
-    try {
-      const conn = await getSFConnection();
+// ---------- 工具函数：根据 products 更新 Case.Selected_Products__c ----------
+// 方案 B：把多条产品信息拼成多行长文本，写入 Case 上的 Long Text 字段 Selected_Products__c
+async function updateCaseSelectedProducts(conn, caseId, productsRaw) {
+  const products = Array.isArray(productsRaw) ? productsRaw : [];
+  const itemNos = products
+    .map((p) => p && p.itemNo)
+    .filter(Boolean);
 
-      // 从SF中查询 Product ATP 的records
-      const result = await conn.query(`
-        SELECT Item_No4__c, Name, Status2__c
-        FROM Product_ATP__c
-        WHERE Item_No4__c != null
-      `);
-
-      // 获取最终的products数据
-      const products = result.records.map(record => ({
-        itemNo: record.Item_No4__c,
-        name: record.Name,
-        // productCode: record.Product_Code__c,
-        status: record.Status2__c,
-      }));
-
-      res.json(products);
-    } 
-    catch (error) {
-      console.error("[API /api/products] Error:", error);
-      res.status(500).json({
-        success: false,
-        message: "Internal server error",
-        error: error.message,
-      });
-    }
+  if (!itemNos.length) {
+    console.log("[API] 没有选中的 product，跳过更新 Selected_Products__c");
+    return;
   }
-);
+
+  // 构造 IN 子句（注意转义单引号）
+  const inClause = itemNos
+    .map((no) => `'${String(no).replace(/'/g, "\\'")}'`)
+    .join(",");
+
+  // 从 Product_ATP__c 里把需要展示的字段查出来
+  // 这里用的是你上面确认过的字段：Item_No4__c, Name, Status2__c
+  const result = await conn.query(`
+    SELECT Item_No4__c, Name, Status2__c
+    FROM Product_ATP__c
+    WHERE Item_No4__c IN (${inClause})
+  `);
+
+  const atpMap = new Map(
+    result.records.map((r) => [r.Item_No4__c, r])
+  );
+
+  // 按前端 products 的顺序拼接多行文本
+  const lines = products
+    .map((p, idx) => {
+      const row = atpMap.get(p.itemNo);
+      if (!row) return null;
+
+      // 想显示哪些字段就改这里（目前：SAP Item | Name | Status）
+      return `${idx + 1}. ${row.Item_No4__c} | ${row.Name || ""} | ${row.Status2__c || ""}`;
+    })
+    .filter(Boolean);
+
+  if (!lines.length) {
+    console.log("[API] 未找到匹配的 Product_ATP__c 记录，跳过更新 Selected_Products__c");
+    return;
+  }
+
+  const summary = lines.join("\n");
+
+  // 更新 Case 上的 Long Text 字段 Selected_Products__c
+  await conn.sobject("Case").update({
+    Id: caseId,
+    Selected_Products__c: summary, // ⚠️ 确认你的 API Name 就是这个
+  });
+
+  console.log("[API] 已更新 Case.Selected_Products__c");
+}
+
+// ---------- 获取 Product ATP 列表给前端用 ----------
+app.get("/api/products", async (req, res) => {
+  try {
+    const conn = await getSFConnection();
+
+    const result = await conn.query(`
+      SELECT Item_No4__c, Name, Status2__c
+      FROM Product_ATP__c
+      WHERE Item_No4__c != null
+    `);
+
+    const products = result.records.map((record) => ({
+      itemNo: record.Item_No4__c,
+      name: record.Name,
+      status: record.Status2__c,
+    }));
+
+    res.json(products);
+  } catch (error) {
+    console.error("[API /api/products] Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+});
 
 // multer：用内存存储文件
 const upload = multer();
@@ -118,11 +169,11 @@ app.post(
         Sales_Territory__c: data.salesTerritory,
         Estimated_Value__c: data.estimatedValue,
         LDRCategory__c: data.dropdown,
-        Support_Type_2__c:"",
+        Support_Type_2__c: "",
 
         // 自定义字段
-        RequestSource__c: data.role,          // Role
-        Project_Name__c: data.projectName,    // 注意用前端的 projectName
+        RequestSource__c: data.role, // Role
+        Project_Name__c: data.projectName, // 注意用前端的 projectName
 
         // Step 3 尺寸 Size
         Length__c: data.size?.length || "",
@@ -158,8 +209,6 @@ app.post(
 
       console.log("[API] 即将创建 Case，body:", caseBody);
 
-      // ❗ 不要传 Support_Type_2__c，避免 restricted picklist 问题
-
       // 4. 创建 Case
       const createdCase = await conn.sobject("Case").create(caseBody);
 
@@ -174,6 +223,13 @@ app.post(
 
       const caseId = createdCase.id;
       console.log("[API] Case 创建成功:", caseId);
+
+      // ⭐ 新增：用选中的 products 更新 Case.Selected_Products__c
+      try {
+        await updateCaseSelectedProducts(conn, caseId, data.products);
+      } catch (e) {
+        console.error("[API] 更新 Selected_Products__c 失败:", e);
+      }
 
       // 5. 把文件挂在 Case 上（中间那列 Attachments / Files 会显示）
       for (const file of files) {
