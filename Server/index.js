@@ -13,6 +13,40 @@ app.use(cors({ origin: "http://localhost:5173" }));
 // 解析 JSON（如果以后有别的纯 JSON 接口也能用）
 app.use(express.json());
 
+app.get(
+  "/api/products",
+  async (req,res) => {
+    try {
+      const conn = await getSFConnection();
+
+      // 从SF中查询 Product ATP 的records
+      const result = await conn.query(`
+        SELECT Item_No4__c, Name, Status2__c
+        FROM Product_ATP__c
+        WHERE Item_No4__c != null
+      `);
+
+      // 获取最终的products数据
+      const products = result.records.map(record => ({
+        itemNo: record.Item_No4__c,
+        name: record.Name,
+        // productCode: record.Product_Code__c,
+        status: record.Status2__c,
+      }));
+
+      res.json(products);
+    } 
+    catch (error) {
+      console.error("[API /api/products] Error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
+);
+
 // multer：用内存存储文件
 const upload = multer();
 

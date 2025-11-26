@@ -1,36 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
-const productOptions = {
-  "Accessories": ["Accessories"],
-  "Commercial Downlights": [
-    "ASTRAL", "Aurora Square", "CEDAR", "CENTAURI", "METEOR", "OVOLO", "STELLAR",
-    "VIVA145", "XBOX"
-  ],
-  "Drivers": ["DRIVERS"],
-  "Exit and Emergency": ["ESODO", "LUME"],
-  "Highbays and Lowbays": ["BENZINA", "SKYLUX", "SKYPAD"],
-  "Indoor Battens": ["BLADE", "UNO", "VISTA", "VISTAEVO", "VISTA-HR"],
-  "KASTA": ["Kasta Smart", "Kasta Unison"],
-  "Lighting Control": ["DUO", "SENTURA"],
-  "Linear and Track Lighting": ["FLEXION", "FOCI", "PARALLAX", "TRACK"],
-  "Other": ["Other"],
-  "Other Cost": ["LED Lamps", "LED TUBE"],
-  "Outdoor Lighting": [
-    "ARCHISPOT", "CALEO", "DAWN", "HS-LUMINO", "HS-LUMINO PRO", "HS-SKYLUX FG PRO",
-    "MATITA", "PANORAMA", "PARX G2", "PROXIMA", "PROXIMA G2", "STAX", "WALL WASHER"
-  ],
-  "Oysters": ["DISCUS", "PURO G4"],
-  "Panels": ["FRAME", "MATRIX", "MATRIX_III"],
-  "Residential Downlights": [
-    "AURORA", "DETAIL", "DULAR", "HABITAT", "Retro 7W Kit", "Stellar 60",
-    "VIVA EVO", "VIVA LP", "VIVA SEN", "VIVA110", "VIVA115", "VIVA90", "VIVA-REMOTE"
-  ],
-  "Weatherproof Battens": [
-    "CENTAU", "DURA", "DURA FOREMAN", "SENTRY", "TRIPROOF G2"
-  ]
-};
-
 
 export default function Step3LightingDesign({ onBack, onNext }) {
   const {
@@ -41,6 +11,22 @@ export default function Step3LightingDesign({ onBack, onNext }) {
     setValue,
     formState: { errors },
   } = useFormContext();
+
+  // Fetch all products by calling API
+  const [allProducts, setAllProducts] = useState([]);
+
+    useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("http://localhost:4000/api/products");
+        const data = await res.json();
+        setAllProducts(data);
+      } catch (err) {
+        console.error("加载 /api/products 失败:", err);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const submitHandler = async () => {
     const isValid = await trigger([
@@ -72,11 +58,12 @@ export default function Step3LightingDesign({ onBack, onNext }) {
     name: "products",
   });
 
-  const watchProducts = useWatch({ control, name: "products" });
+  // const watchProducts = useWatch({ control, name: "products" });
   const selectedAreaType = useWatch({ control, name: "dropdown" });
   const [uploadedFiles, setUploadedFiles] = useState([]);
 
-
+  // Handle dynamic product options based on selected area type
+  
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -166,35 +153,55 @@ export default function Step3LightingDesign({ onBack, onNext }) {
         {errors.control && <p className="text-red-500 text-sm">This field is required</p>}
       </div>
 
-      <div>
+
+      {/* 产品列表 动态增删 */}
+            <div>
         <h3 className="text-lg font-semibold text-[#13294B] mb-2">Product List</h3>
-        {fields.map((item, index) => {
-          const selectedCat = watchProducts?.[index]?.category;
-          const availableProducts = productOptions[selectedCat] || [];
 
-          return (
-            <div key={item.id} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <select {...register(`products.${index}.category`, { required: true })} className="border border-gray-300 p-3 rounded-lg">
-                <option value="" className="text-gray-400">Select Category</option>
-                {Object.keys(productOptions).map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
-              <select {...register(`products.${index}.product`, { required: true })} className="border border-gray-300 p-3 rounded-lg">
-                <option value="" className="text-gray-400">{selectedCat ? "Select Product" : "Select category first"}</option>
-                {availableProducts.map(p => (
-                  <option key={p} value={p}>{p}</option>
-                ))}
-              </select>
-              <button type="button" onClick={() => remove(index)} className="text-white font-semibold rounded-full bg-[#00b388] hover:bg-[#045542]">Remove</button>
-            </div>
-          );
-        })}
+        {fields.map((item, index) => (
+          <div
+            key={item.id}
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4"
+          >
+            {/* ✅ 可输入搜索：input + datalist，提交的仍然是 itemNo */}
+            <input
+              list={`products-list-${index}`}
+              {...register(`products.${index}.itemNo`, { required: true })}
+              className="border border-gray-300 p-3 rounded-lg md:col-span-2"
+              placeholder="Type to search product..."
+            />
 
-        <button type="button" onClick={() => append({ category: "", product: "" })} className="text-[#00B388] underline">
+            <datalist id={`products-list-${index}`}>
+              {allProducts.map((p) => (
+                <option
+                  key={p.itemNo}
+                  value={p.itemNo}     // 真正保存 / 提交的是 itemNo
+                >
+                  {p.itemNo} | {p.name} | {p.status}
+                </option>
+              ))}
+            </datalist>
+
+            <button
+              type="button"
+              onClick={() => remove(index)}
+              className="text-white font-semibold rounded-full bg-[#00b388] hover:bg-[#045542]"
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+
+        <button
+          type="button"
+          onClick={() => append({ itemNo: "" })}
+          className="text-[#00B388] underline"
+        >
           + Add Product
         </button>
       </div>
+
+
 
       <div>
         <label className="block text-sm font-medium text-[#13294B] mb-2">Other Information</label>
