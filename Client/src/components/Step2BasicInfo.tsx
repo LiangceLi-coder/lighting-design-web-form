@@ -61,10 +61,11 @@ export default function Step2Transport({ onNext, onBack }) {
     setIsExistingOpportunity(opportunityExists === "Yes");
   }, [opportunityExists]);
 
-  // const onSubmit = (data) => {
-  //   console.log("Step 2 Data:", data);
-  //   onNext(data);
-  // };
+  const businessdivision = [
+    "Haneco",
+    "Haneco Professional Solutions",
+    "Kasta",
+  ];
 
     const handleNextClick = async () => {
     const isValid = await trigger([
@@ -76,6 +77,13 @@ export default function Step2Transport({ onNext, onBack }) {
       "salesTerritory",
       "probability",
       "estimatedSupplyDate",
+      "linkToOpportunity",
+      "businessdivision",
+      "opportunityname",
+      "closedate",
+      "stage",
+      "dropdown",
+      "probability",
     ]);
     if (!isValid) return;
     onNext();
@@ -147,6 +155,7 @@ export default function Step2Transport({ onNext, onBack }) {
                 <option value="Yes">Yes</option>
                 <option value="No">No, I want to create a new opportunity automatically</option>
               </select>
+               {errors.opportunityExists && <p className="text-red-500 text-sm">This field is required</p>}
             </div>
 
             {isExistingOpportunity && (
@@ -162,36 +171,44 @@ export default function Step2Transport({ onNext, onBack }) {
 
             {!isExistingOpportunity && (
               <div>
-                <label className="block text-sm font-medium text-[#13294B] mb-2">Business Division</label>
-                <input
-                  type="text"
+                <label className="block text-sm font-medium text-[#13294B] mb-2">Business Division<span className="text-red-500"> *</span></label>
+                <select
                   {...register("businessdivision", { required: true })}
-                  className="w-full border border-gray-300 p-3 rounded-lg"
-                />
+                  className="w-full border border-gray-300 p-3 rounded-lg text-gray-700"
+                >
+                  {businessdivision.map((division) => (
+                    <option key={division} value={division}>{division}</option>
+                  ))}
+                </select>
+                {errors.businessdivision && <p className="text-red-500 text-sm">This field is required</p>}
 
-                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">Opportunity Name</label>
+                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">Opportunity Name<span className="text-red-500"> *</span></label>
                 <input
                   type="text"
                   {...register("opportunityname", { required: true })}
                   className="w-full border border-gray-300 p-3 rounded-lg"
                 />
+                {errors.opportunityname && <p className="text-red-500 text-sm">This field is required</p>}
 
-                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">Close Date</label>
+                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">Close Date<span className="text-red-500"> *</span></label>
                 <input
                   type="date"
                   {...register("closedate", { required: true })}
                   className="w-full border border-gray-300 p-3 rounded-lg"
                 />
+                {errors.closedate && <p className="text-red-500 text-sm">This field is required</p>}
 
-                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">Stage</label>
+                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">Stage<span className="text-red-500"> *</span></label>
                 <input
                   type="text"
                   {...register("stage", { required: true })}
                   className="w-full border border-gray-300 p-3 rounded-lg"
                 />
+                {errors.stage && <p className="text-red-500 text-sm">This field is required</p>}
 
-                 <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">Probability (%)</label>
+                 <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">Probability (%)<span className="text-red-500"> *</span></label>
                   <input type="number" min={0} max={100} {...register("probability")} className="w-full border border-gray-300 p-3 rounded-lg" />
+                  {errors.probability && <p className="text-red-500 text-sm">This field is required</p>}
               </div>
             )}
           </div>
