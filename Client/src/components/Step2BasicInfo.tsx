@@ -159,11 +159,46 @@ export default function Step2Transport({ onNext, onBack }) {
                 />
               </div>
             )}
+
+            {!isExistingOpportunity && (
+              <div>
+                <label className="block text-sm font-medium text-[#13294B] mb-2">Business Division</label>
+                <input
+                  type="text"
+                  {...register("businessdivision", { required: true })}
+                  className="w-full border border-gray-300 p-3 rounded-lg"
+                />
+
+                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">Opportunity Name</label>
+                <input
+                  type="text"
+                  {...register("opportunityname", { required: true })}
+                  className="w-full border border-gray-300 p-3 rounded-lg"
+                />
+
+                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">Close Date</label>
+                <input
+                  type="date"
+                  {...register("closedate", { required: true })}
+                  className="w-full border border-gray-300 p-3 rounded-lg"
+                />
+
+                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">Stage</label>
+                <input
+                  type="text"
+                  {...register("stage", { required: true })}
+                  className="w-full border border-gray-300 p-3 rounded-lg"
+                />
+
+                 <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">Probability (%)</label>
+                  <input type="number" min={0} max={100} {...register("probability")} className="w-full border border-gray-300 p-3 rounded-lg" />
+              </div>
+            )}
           </div>
         )}
 
         {/* Sales Employee and Probability */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-[#13294B] mb-2">Sales Employee</label>
             <input type="text" {...register("salesEmployee")} className="w-full border border-gray-300 p-3 rounded-lg" />
@@ -172,7 +207,7 @@ export default function Step2Transport({ onNext, onBack }) {
             <label className="block text-sm font-medium text-[#13294B] mb-2">Probability (%)</label>
             <input type="number" min={0} max={100} {...register("probability")} className="w-full border border-gray-300 p-3 rounded-lg" />
           </div>
-        </div>
+        </div> */}
 
         {/* Sales Territory and Estimated Value */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
