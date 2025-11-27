@@ -155,7 +155,7 @@ export default function Step3LightingDesign({ onBack, onNext }) {
 
 
       {/* 产品列表 动态增删 */}
-            <div>
+      <div>
         <h3 className="text-lg font-semibold text-[#13294B] mb-2">Product List</h3>
 
         {fields.map((item, index) => (

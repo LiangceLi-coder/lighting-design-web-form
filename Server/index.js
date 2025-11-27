@@ -20,7 +20,6 @@ function normalizeSfDate(value) {
   return d.toISOString().slice(0, 10); // 'YYYY-MM-DD'
 }
 
-
 // ---------- 工具函数：根据 products 更新 Case.Selected_Products__c ----------
 // 方案 B：把多条产品信息拼成多行长文本，写入 Case 上的 Long Text 字段 Selected_Products__c
 async function updateCaseSelectedProducts(conn, caseId, productsRaw) {
@@ -106,6 +105,53 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
+app.get("/api/opportunities", async (req,res)=> {
+  try 
+  {
+    const conn = await getSFConnection();
+     const rawQ = (req.query.q || "").trim();
+    if (!rawQ) {
+      // 没关键字就直接返回空数组
+      return res.json([]);
+    }
+
+    // 简单清洗一下，避免 SOQL 注入
+    const q = rawQ.replace(/['"]/g, "");
+
+    const soql = `
+      SELECT Id, Name, StageName, Amount, CloseDate
+      FROM Opportunity
+      WHERE Name LIKE '%${q}%'
+      ORDER BY LastModifiedDate DESC
+      LIMIT 20
+    `;
+
+    const result = await conn.query(soql);
+
+      const opportunities = result.records.map((o) => ({
+      id: o.Id,
+      name: o.Name,
+      stageName: o.StageName,
+      closeDate: o.CloseDate,   // 格式：YYYY-MM-DD
+      amount: o.Amount,
+    }));
+    console.log("[DEBUG] OPPORTUNITIES:", opportunities);
+    
+
+    res.json(opportunities);
+  }
+
+  catch (error) {
+    console.error("[API /api/opportunities]");
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+  });
+    
+  }
+});
+
 // multer：用内存存储文件
 const upload = multer();
 
@@ -145,7 +191,7 @@ app.post(
       const conn = await getSFConnection();
       console.log("[SF] Logged in, instance:", conn.instanceUrl);
 
-      // 3.（可选）创建 Opportunity：只在 linkToOpportunity=Yes 且 opportunityExists=No 时创建新的
+      // 3.（可选）创建 Opportunity：只在 linkToOpportunity=Yes 且 opportunityExists=No 时创建新的/若opportunityExists=Yes的时候使用已有的api
       let createdOpportunityId = null;
 
       if (
@@ -181,6 +227,15 @@ app.post(
         createdOpportunityId = createdOppo.id;
         console.log("[API] 成功创建 Opportunity", createdOpportunityId);
       }
+                
+      if (
+          data.linkToOpportunity === "Yes" &&
+          data.opportunityExists === "Yes"
+      ) {
+        console.log("[OPPORTUNITYID]",data.opportunityId);
+        
+        createdOpportunityId = data.opportunityId; 
+      }
 
       // 4. 组装 Case 字段（按你之前的 mapping 来）
       const caseBody = {
@@ -208,7 +263,7 @@ app.post(
         Active_Tender__c: data.activeTender,
         Contractor__c: data.contractor,
         Probability__c: data.probability,
-        Estimated_Supply_Date__c: data.estimatedSupplyDate, // YYYY-MM-DD
+        Estimated_Supply_Date__c: normalizeSfDate(data.estimatedSupplyDate), // YYYY-MM-DD
 
         Sales_Territory__c: data.salesTerritory,
         Estimated_Value__c: data.estimatedValue,
@@ -259,10 +314,6 @@ app.post(
       }
 
       console.log("[API] 即将创建 Case，body:", caseBody);
-      console.log("[DEBUG] successful date form", data.estimatedValue);
-      console.log("[DEBUG] successful date form type",typeof(data.estimatedSupplyDate));
-      
-
 
       // 5. 创建 Case
       const createdCase = await conn.sobject("Case").create(caseBody);
@@ -321,3 +372,5 @@ const port = process.env.PORT || 4000;
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+
+
