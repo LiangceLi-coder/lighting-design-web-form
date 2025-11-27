@@ -3,9 +3,12 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
+const helmet = require("helmet");
 const { getSFConnection } = require("./sfClient");
 
 const app = express();
+
+app.use(helmet());
 
 // 允许前端访问
 app.use(cors({ origin: "http://localhost:5173" }));
@@ -153,7 +156,14 @@ app.get("/api/opportunities", async (req,res)=> {
 });
 
 // multer：用内存存储文件
-const upload = multer();
+const upload = multer(
+  {
+      limits: {
+    fileSize: 5*1024*1024,
+    files:10,
+  }
+  }
+);
 
 // 接口：创建 Case + 把文件挂在 Case 上
 app.post(
