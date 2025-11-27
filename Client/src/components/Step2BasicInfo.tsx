@@ -232,7 +232,7 @@ export default function Step2Transport({ onNext, onBack }) {
 
                     try {
                       const res = await fetch(
-                        `http://localhost:4000/api/opportunities?q=${encodeURIComponent(
+                        `https://lighting-design-web-form.onrender.com/api/opportunities?q=${encodeURIComponent(
                           keyword
                         )}`
                       );

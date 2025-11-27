@@ -18,7 +18,7 @@ export default function Step3LightingDesign({ onBack, onNext }) {
     useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://localhost:4000/api/products");
+        const res = await fetch("https://lighting-design-web-form.onrender.com/api/products");
         const data = await res.json();
         setAllProducts(data);
       } catch (err) {

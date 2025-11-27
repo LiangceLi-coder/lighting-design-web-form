@@ -53,8 +53,9 @@ const submitHandler = async () => {
     });
   }
 
+  // https://lighting-design-web-form.onrender.com 
   try {
-    const res = await fetch("http://localhost:4000/api/lighting-design", {
+    const res = await fetch("https://lighting-design-web-form.onrender.com/api/lighting-design", {
       method: "POST",
       body: fd,
     });
