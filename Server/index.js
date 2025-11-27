@@ -11,7 +11,7 @@ const app = express();
 app.use(helmet());
 
 // 允许前端访问
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin: ["http://localhost:5173","https://lightingdesignweb-form.netlify.app"] }));
 
 // 解析 JSON（如果以后有别的纯 JSON 接口也能用）
 app.use(express.json());
