@@ -23,7 +23,7 @@ export default function PreSubmissionChecklist({ onBack, onSubmit }) {
 
   const [submitted, setSubmitted] = useState(false);
   if(submitted) {
-    window.location.href = "/FinishPage";
+    window.location.href = "/";
   }
 
   const getYesNo = (value) => {
