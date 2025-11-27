@@ -277,6 +277,14 @@ export default function Step2Transport({ onNext, onBack }) {
                     <p className="text-xs text-gray-500">
                       ID: {selectedOpportunity.id}
                     </p> 
+
+                    <button
+                      type="button"
+                      onClick={()=>{setSelectedOpportunity(null)}}
+                      className="text-white font-semibold rounded-full bg-[#00b388] hover:bg-[#045542] w-20 h-8 mt-4"
+                    >
+                      Remove
+                    </button>
                   </div>
                 )}
 
