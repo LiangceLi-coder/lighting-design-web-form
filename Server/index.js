@@ -279,7 +279,7 @@ app.post(
         Estimated_Value__c: data.estimatedValue,
         LDRCategory__c: data.dropdown,
         Support_Type_2__c: "",
-        StageName: data.stage,
+        // StageName: data.stage,
 
         // 自定义字段
         RequestSource__c: data.role, // Role
