@@ -63,7 +63,7 @@ export default function Step2Transport({ onNext, onBack }) {
     setIsExistingOpportunity(opportunityExists || null);
   }, [opportunityExists]);
 
-  const businessdivision = ["Haneco", "Haneco Professional Solutions", "Kasta"];
+  const businessdivision = ["Haneco", "Lucesco", "Kasta"];
 
   const handleNextClick = async () => {
     const fieldsToValidate: string[] = [
@@ -348,11 +348,19 @@ export default function Step2Transport({ onNext, onBack }) {
                 <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">
                   Stage<span className="text-red-500"> *</span>
                 </label>
-                <input
-                  type="text"
-                  {...register("stage", { required: true })}
-                  className="w-full border border-gray-300 p-3 rounded-lg"
-                />
+                <select
+                    {...register("stage")}
+                    className="w-full border border-gray-300 p-3 rounded-lg text-gray-700"
+                  >
+                    <option value="" className="text-gray-400">
+                      Select option
+                    </option>
+                    <option value="Request">Request</option>
+                    <option value="Quote Sent">Quote Sent</option>
+                    <option value="Customer Querying Quote">Customer Querying Quote</option>
+                    <option value="Order Received">Order Received</option>
+                    <option value="Closed">Closed</option>
+               </select>
                 {errors.stage && (
                   <p className="text-red-500 text-sm">This field is required</p>
                 )}
