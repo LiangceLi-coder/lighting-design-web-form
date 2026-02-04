@@ -20,36 +20,32 @@ const sportsAreaOptions = [
   "Squash",
   "Netball/Basketball",
   "Other Areas [PLEASE SPECIFY]",
-
-  // Newly added from Layout
-  "Commercial Office – Ceiling",
-  "Commercial Office – Task",
-  "Commercial – Common Areas",
+  "Commercial Office - Ceiling",
+  "Commercial Office - Task",
+  "Commercial - Common Areas",
   "Multi-Residential",
-  "Industrial – High Bay",
-  "Industrial – Low Bay",
-  "Education – Classroom",
-  "Education – Lecture Theatres",
-  "Medical – Clean Room",
-  "Sports Lighting – Recreational",
-  "Sports Lighting – Training",
-  "Sports Lighting – Professional",
+  "Industrial - High Bay",
+  "Industrial - Low Bay",
+  "Education - Classroom",
+  "Education - Lecture Theatres",
+  "Medical - Clean Room",
+  "Sports Lighting - Recreational",
+  "Sports Lighting - Training",
+  "Sports Lighting - Professional",
 ];
 
 export default function Step2Transport({ onNext, onBack }) {
   const {
     register,
     trigger,
-    setValue,          
+    setValue,
     control,
     formState: { errors },
   } = useFormContext();
 
   const [showOpportunityFields, setShowOpportunityFields] = useState(false);
-  const [isExistingOpportunity, setIsExistingOpportunity] = useState<string | null>(null);
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [selectedOpportunity, setSelectedOpportunity] = useState<any | null>(null);
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedOpportunity, setSelectedOpportunity] = useState(null);
 
   const linkToOpportunity = useWatch({ control, name: "linkToOpportunity" });
   const opportunityExists = useWatch({ control, name: "opportunityExists" });
@@ -59,14 +55,10 @@ export default function Step2Transport({ onNext, onBack }) {
     setShowOpportunityFields(linkToOpportunity === "Yes");
   }, [linkToOpportunity]);
 
-  useEffect(() => {
-    setIsExistingOpportunity(opportunityExists || null);
-  }, [opportunityExists]);
-
   const businessdivision = ["Haneco", "Lucesco", "Kasta"];
 
   const handleNextClick = async () => {
-    const fieldsToValidate: string[] = [
+    const fieldsToValidate = [
       "contractor",
       "activeTender",
       "salesTerritory",
@@ -75,12 +67,10 @@ export default function Step2Transport({ onNext, onBack }) {
       "dropdown",
     ];
 
-    // 如果是 sports lighting，要校验 LDR Category
     if (areaTypesWithSubSelection.includes(selectedAreaType)) {
       fieldsToValidate.push("sportsArea");
     }
 
-    // 如果要 link Opportunity，再加上相关字段
     if (linkToOpportunity === "Yes") {
       fieldsToValidate.push("linkToOpportunity", "opportunityExists");
 
@@ -104,49 +94,31 @@ export default function Step2Transport({ onNext, onBack }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex justify-center items-start py-12 px-4 sm:px-6 lg:px-8">
-      <div className="space-y-8 w-full max-w-3xl bg-white p-10 rounded-2xl shadow-lg border border-gray-200">
-        <h2 className="text-3xl font-bold text-[#13294B] mb-6">
-          Step 2 - Sales-related Information
-        </h2>
+    <div className="form-page">
+      <div className="form-panel animate-fade">
+        <h2 className="section-title">Step 2 Sales-related Information</h2>
 
-        {/* Contractor */}
         <div>
-          <label className="block text-sm font-medium text-[#13294B] mb-2">
-            Contractor <span className="text-red-500">*</span>
+          <label>
+            Contractor <span className="badge-required">Required</span>
           </label>
-          <input
-            type="text"
-            {...register("contractor", { required: true })}
-            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00B388]"
-          />
+          <input type="text" {...register("contractor", { required: true })} />
           {errors.contractor && (
             <p className="text-red-500 text-sm">This field is required</p>
           )}
         </div>
 
-        {/* Active Tender */}
         <div>
-          <label className="block text-sm font-medium text-[#13294B] mb-2">
-            Active Tender <span className="text-red-500">*</span>
+          <label>
+            Active Tender <span className="badge-required">Required</span>
           </label>
-          <div className="flex items-center space-x-6">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                value="Yes"
-                {...register("activeTender", { required: true })}
-                className="mr-2"
-              />{" "}
+          <div className="form-grid grid-2">
+            <label>
+              <input type="radio" value="Yes" {...register("activeTender", { required: true })} />
               Yes
             </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                value="No"
-                {...register("activeTender", { required: true })}
-                className="mr-2"
-              />{" "}
+            <label>
+              <input type="radio" value="No" {...register("activeTender", { required: true })} />
               No
             </label>
           </div>
@@ -155,28 +127,17 @@ export default function Step2Transport({ onNext, onBack }) {
           )}
         </div>
 
-        {/* Link to Salesforce Opportunity */}
         <div>
-          <label className="block text-sm font-medium text-[#13294B] mb-2">
-            Link to Salesforce Opportunity <span className="text-red-500">*</span>
+          <label>
+            Link to Salesforce Opportunity <span className="badge-required">Required</span>
           </label>
-          <div className="flex items-center space-x-6">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                value="Yes"
-                {...register("linkToOpportunity", { required: true })}
-                className="mr-2"
-              />{" "}
+          <div className="form-grid grid-2">
+            <label>
+              <input type="radio" value="Yes" {...register("linkToOpportunity", { required: true })} />
               Yes
             </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                value="No"
-                {...register("linkToOpportunity", { required: true })}
-                className="mr-2"
-              />{" "}
+            <label>
+              <input type="radio" value="No" {...register("linkToOpportunity", { required: true })} />
               No
             </label>
           </div>
@@ -185,45 +146,30 @@ export default function Step2Transport({ onNext, onBack }) {
           )}
         </div>
 
-        {/* Conditional Opportunity Fields */}
         {showOpportunityFields && (
-          <div className="space-y-4">
-            {/* 先选：这个 Opportunity 是否已存在 */}
+          <div className="form-grid">
             <div>
-              <label className="block text-sm font-medium text-[#13294B] mb-2">
-                The opportunity is existing
-              </label>
-              <select
-                {...register("opportunityExists", { required: true })}
-                className="w-full border border-gray-300 p-3 rounded-lg text-gray-700"
-              >
+              <label>The opportunity is existing</label>
+              <select {...register("opportunityExists", { required: true })}>
                 <option value="" className="text-gray-400">
                   Select option
                 </option>
                 <option value="Yes">Yes</option>
-                <option value="No">
-                  No, I want to create a new opportunity automatically
-                </option>
+                <option value="No">No, create a new opportunity</option>
               </select>
               {errors.opportunityExists && (
                 <p className="text-red-500 text-sm">This field is required</p>
               )}
             </div>
 
-            {/* 情况一：已有 Opportunity -> 搜索 + 选择 */}
             {opportunityExists === "Yes" && (
               <div className="relative">
-                <label className="block text-sm font-medium text-[#13294B] mb-2">
-                  Search Opportunity
-                </label>
-
+                <label>Search Opportunity</label>
                 <input
                   type="text"
                   placeholder="Type keyword to search..."
-                  className="w-full border border-gray-300 p-3 rounded-lg"
                   onChange={async (e) => {
                     const keyword = e.target.value.trim();
-                    setSearchKeyword(keyword);
 
                     if (keyword.length < 2) {
                       setSearchResults([]);
@@ -246,7 +192,7 @@ export default function Step2Transport({ onNext, onBack }) {
                 />
 
                 {searchResults.length > 0 && (
-                  <div className="absolute z-10 bg-white border border-gray-300 w-full rounded-md mt-1 max-h-64 overflow-y-auto shadow-lg">
+                  <div className="absolute z-10 bg-white border border-gray-200 w-full rounded-xl mt-2 max-h-64 overflow-y-auto shadow-lg">
                     {searchResults.map((opp) => (
                       <div
                         key={opp.id}
@@ -257,9 +203,9 @@ export default function Step2Transport({ onNext, onBack }) {
                           setSearchResults([]);
                         }}
                       >
-                        <p className="font-medium text-[#13294B]">{opp.name}</p>
+                        <p className="font-medium text-gray-900">{opp.name}</p>
                         <p className="text-sm text-gray-500">
-                          Stage: {opp.stageName} · Close: {opp.closeDate}
+                          Stage: {opp.stageName} � Close: {opp.closeDate}
                         </p>
                       </div>
                     ))}
@@ -267,50 +213,36 @@ export default function Step2Transport({ onNext, onBack }) {
                 )}
 
                 {selectedOpportunity && (
-                  <div className="mt-3 p-3 bg-[#F1F5F9] rounded-lg border border-gray-300">
-                    <p className="font-semibold text-[#13294B]">
-                      Selected Opportunity:
-                    </p>
-                    <p className="text-sm text-gray-700">
-                      {selectedOpportunity.name}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      ID: {selectedOpportunity.id}
-                    </p> 
+                  <div className="mt-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                    <p className="font-semibold">Selected Opportunity:</p>
+                    <p className="text-sm text-gray-700">{selectedOpportunity.name}</p>
+                    <p className="text-xs text-gray-500">ID: {selectedOpportunity.id}</p>
 
                     <button
                       type="button"
-                      onClick={()=>{setSelectedOpportunity(null)}}
-                      className="text-white font-semibold rounded-full bg-[#00b388] hover:bg-[#045542] w-20 h-8 mt-4"
+                      onClick={() => {
+                        setSelectedOpportunity(null);
+                      }}
+                      className="btn-outline"
                     >
                       Remove
                     </button>
                   </div>
                 )}
 
-                {/* 隐藏字段：真正提交到后端的值 */}
-                <input
-                  type="hidden"
-                  {...register("opportunityId", { required: true })}
-                />
+                <input type="hidden" {...register("opportunityId", { required: true })} />
                 {errors.opportunityId && (
-                  <p className="text-red-500 text-sm mt-1">
-                    This field is required
-                  </p>
+                  <p className="text-red-500 text-sm mt-1">This field is required</p>
                 )}
               </div>
             )}
 
-            {/* 情况二：要自动创建新的 Opportunity */}
             {opportunityExists === "No" && (
               <div>
-                <label className="block text-sm font-medium text-[#13294B] mb-2">
-                  Business Division<span className="text-red-500"> *</span>
+                <label>
+                  Business Division <span className="badge-required">Required</span>
                 </label>
-                <select
-                  {...register("businessdivision", { required: true })}
-                  className="w-full border border-gray-300 p-3 rounded-lg text-gray-700"
-                >
+                <select {...register("businessdivision", { required: true })}>
                   {businessdivision.map((division) => (
                     <option key={division} value={division}>
                       {division}
@@ -321,60 +253,43 @@ export default function Step2Transport({ onNext, onBack }) {
                   <p className="text-red-500 text-sm">This field is required</p>
                 )}
 
-                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">
-                  Opportunity Name<span className="text-red-500"> *</span>
+                <label>
+                  Opportunity Name <span className="badge-required">Required</span>
                 </label>
-                <input
-                  type="text"
-                  {...register("opportunityname", { required: true })}
-                  className="w-full border border-gray-300 p-3 rounded-lg"
-                />
+                <input type="text" {...register("opportunityname", { required: true })} />
                 {errors.opportunityname && (
                   <p className="text-red-500 text-sm">This field is required</p>
                 )}
 
-                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">
-                  Close Date<span className="text-red-500"> *</span>
+                <label>
+                  Close Date <span className="badge-required">Required</span>
                 </label>
-                <input
-                  type="date"
-                  {...register("closedate", { required: true })}
-                  className="w-full border border-gray-300 p-3 rounded-lg"
-                />
+                <input type="date" {...register("closedate", { required: true })} />
                 {errors.closedate && (
                   <p className="text-red-500 text-sm">This field is required</p>
                 )}
 
-                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">
-                  Stage<span className="text-red-500"> *</span>
+                <label>
+                  Stage <span className="badge-required">Required</span>
                 </label>
-                <select
-                    {...register("stage")}
-                    className="w-full border border-gray-300 p-3 rounded-lg text-gray-700"
-                  >
-                    <option value="" className="text-gray-400">
-                      Select option
-                    </option>
-                    <option value="Request">Request</option>
-                    <option value="Quote Sent">Quote Sent</option>
-                    <option value="Customer Querying Quote">Customer Querying Quote</option>
-                    <option value="Order Received">Order Received</option>
-                    <option value="Closed">Closed</option>
-               </select>
+                <select {...register("stage")}>
+                  <option value="" className="text-gray-400">
+                    Select option
+                  </option>
+                  <option value="Request">Request</option>
+                  <option value="Quote Sent">Quote Sent</option>
+                  <option value="Customer Querying Quote">Customer Querying Quote</option>
+                  <option value="Order Received">Order Received</option>
+                  <option value="Closed">Closed</option>
+                </select>
                 {errors.stage && (
                   <p className="text-red-500 text-sm">This field is required</p>
                 )}
 
-                <label className="block text-sm font-medium text-[#13294B] mb-2 mt-2">
-                  Probability (%)<span className="text-red-500"> *</span>
+                <label>
+                  Probability (%) <span className="badge-required">Required</span>
                 </label>
-                <input
-                  type="number"
-                  min={0}
-                  max={100}
-                  {...register("probability", { required: true })}
-                  className="w-full border border-gray-300 p-3 rounded-lg"
-                />
+                <input type="number" min={0} max={100} {...register("probability", { required: true })} />
                 {errors.probability && (
                   <p className="text-red-500 text-sm">This field is required</p>
                 )}
@@ -383,16 +298,10 @@ export default function Step2Transport({ onNext, onBack }) {
           </div>
         )}
 
-        {/* Sales Territory and Estimated Value */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="form-grid grid-2">
           <div>
-            <label className="block text-sm font-medium text-[#13294B] mb-2">
-              Sales Territory
-            </label>
-            <select
-              {...register("salesTerritory")}
-              className="w-full border border-gray-300 p-3 rounded-lg text-gray-700"
-            >
+            <label>Sales Territory</label>
+            <select {...register("salesTerritory")}>
               <option value="" className="text-gray-400">
                 Select option
               </option>
@@ -408,39 +317,21 @@ export default function Step2Transport({ onNext, onBack }) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#13294B] mb-2">
-              Estimated Value (Haneco)
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              {...register("estimatedValue")}
-              className="w-full border border-gray-300 p-3 rounded-lg"
-            />
+            <label>Estimated Value (Haneco)</label>
+            <input type="number" step="0.01" {...register("estimatedValue")} />
           </div>
         </div>
 
-        {/* Estimated Supply Date */}
         <div>
-          <label className="block text-sm font-medium text-[#13294B] mb-2">
-            Estimated Supply Date
-          </label>
-          <input
-            type="date"
-            {...register("estimatedSupplyDate")}
-            className="w-full border border-gray-300 p-3 rounded-lg"
-          />
+          <label>Estimated Supply Date</label>
+          <input type="date" {...register("estimatedSupplyDate")} />
         </div>
 
-        {/* Area Type Dropdown */}
         <div>
-          <label className="block text-sm font-medium text-[#13294B] mb-2">
-            Please select area type <span className="text-red-500">*</span>
+          <label>
+            Please select area type <span className="badge-required">Required</span>
           </label>
-          <select
-            {...register("dropdown", { required: true })}
-            className="w-full border border-gray-300 p-3 rounded-lg text-gray-700"
-          >
+          <select {...register("dropdown", { required: true })}>
             <option value="" className="text-gray-400">
               Select option
             </option>
@@ -461,35 +352,23 @@ export default function Step2Transport({ onNext, onBack }) {
             <option value="Corridors & Circulation Areas">
               Corridors & Circulation Areas
             </option>
-            <option value="Conference/Meeting Rooms">
-              Conference/Meeting Rooms
-            </option>
+            <option value="Conference/Meeting Rooms">Conference/Meeting Rooms</option>
             <option value="Medical - Wards">Medical - Wards</option>
-            <option value="Other Areas [PLEASE SPECIFY]">
-              Other Areas [PLEASE SPECIFY]
-            </option>
-            <option value="Sports Lighting - Outdoors">
-              Sports Lighting - Outdoors
-            </option>
-            <option value="Sports Lighting - Indoors">
-              Sports Lighting - Indoors
-            </option>
+            <option value="Other Areas [PLEASE SPECIFY]">Other Areas [PLEASE SPECIFY]</option>
+            <option value="Sports Lighting - Outdoors">Sports Lighting - Outdoors</option>
+            <option value="Sports Lighting - Indoors">Sports Lighting - Indoors</option>
           </select>
           {errors.dropdown && (
             <p className="text-red-500 text-sm">This field is required</p>
           )}
         </div>
 
-        {/* Secondary Dropdown for Sports Area */}
         {areaTypesWithSubSelection.includes(selectedAreaType) && (
           <div>
-            <label className="block text-sm font-medium text-[#13294B] mb-2">
-              LDR Category <span className="text-red-500">*</span>
+            <label>
+              LDR Category <span className="badge-required">Required</span>
             </label>
-            <select
-              {...register("sportsArea", { required: true })}
-              className="w-full border border-gray-300 p-3 rounded-lg text-gray-700"
-            >
+            <select {...register("sportsArea", { required: true })}>
               <option value="" className="text-gray-400">
                 --- Please select area type ---
               </option>
@@ -505,20 +384,11 @@ export default function Step2Transport({ onNext, onBack }) {
           </div>
         )}
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between pt-4">
-          <button
-            type="button"
-            onClick={onBack}
-            className="bg-gray-300 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-400"
-          >
+        <div className="action-row">
+          <button type="button" onClick={onBack} className="btn-outline">
             Back
           </button>
-          <button
-            type="button"
-            onClick={handleNextClick}
-            className="bg-[#00B388] hover:bg-[#00a177] text-white px-6 py-2 rounded-lg font-semibold"
-          >
+          <button type="button" onClick={handleNextClick} className="btn-accent">
             Next
           </button>
         </div>

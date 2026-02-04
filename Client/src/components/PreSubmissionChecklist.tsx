@@ -18,11 +18,11 @@ const checklistFields = [
 ];
 
 export default function PreSubmissionChecklist({ onBack, onSubmit }) {
-  const { getValues,handleSubmit } = useFormContext();
+  const { getValues, handleSubmit } = useFormContext();
   const formData = getValues();
 
   const [submitted, setSubmitted] = useState(false);
-  if(submitted) {
+  if (submitted) {
     window.location.href = "/";
   }
 
@@ -31,87 +31,70 @@ export default function PreSubmissionChecklist({ onBack, onSubmit }) {
     return value ? "Y" : "N";
   };
 
-const submitHandler = async () => {
-  const allData = getValues();
-  console.log("All Data from all steps:", allData);
+  const submitHandler = async () => {
+    const allData = getValues();
 
-  // 假设上一步用 setValue("drawingFiles", files) 存的
-  const files = allData.drawingFiles || [];
+    const files = allData.drawingFiles || [];
+    const { drawingFiles, ...rest } = allData;
 
-  // 不要把文件对象放进 JSON 里，先从对象里剥离出来
-  const { drawingFiles, ...rest } = allData;
+    const fd = new FormData();
+    fd.append("jsonData", JSON.stringify(rest));
 
-  const fd = new FormData();
-
-  // 普通字段全部打进 jsonData，后端会 JSON.parse
-  fd.append("jsonData", JSON.stringify(rest));
-
-  // 把文件逐个 append 到 drawingFiles
-  if (Array.isArray(files)) {
-    files.forEach((file: File) => {
-      fd.append("drawingFiles", file);
-    });
-  }
-
-  // https://lighting-design-web-form.onrender.com 
-  try {
-    const res = await fetch("https://lighting-design-web-form.onrender.com/api/lighting-design", {
-      method: "POST",
-      body: fd,
-    });
-
-    const result = await res.json();
-    if (!result.success) {
-      console.error("Server error:", result);
-      alert("❌ Failed to create Case: " + (result.message || "Unknown error"));
-      return;
+    if (Array.isArray(files)) {
+      files.forEach((file) => {
+        fd.append("drawingFiles", file);
+      });
     }
 
-    alert("✅ Successfully sent data to backend! Case Id: " + result.caseId);
-    setSubmitted(true);
-  } catch (error) {
-    console.error(error);
-    alert("❌ Failed to send data to backend.");
-  }
-};
+    try {
+      const res = await fetch("https://lighting-design-web-form.onrender.com/api/lighting-design", {
+        method: "POST",
+        body: fd,
+      });
 
+      const result = await res.json();
+      if (!result.success) {
+        console.error("Server error:", result);
+        alert("Failed to create Case: " + (result.message || "Unknown error"));
+        return;
+      }
+
+      alert("Successfully sent data to backend. Case Id: " + result.caseId);
+      setSubmitted(true);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to send data to backend.");
+    }
+  };
 
   return (
-    <form onSubmit={handleSubmit(submitHandler)} className="min-h-screen bg-[#F8FAFC] flex justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="space-y-8 w-full max-w-3xl bg-white p-10 rounded-2xl shadow-lg border border-gray-200">
-        <h2 className="text-2xl font-bold text-[#13294B] mb-2">Pre Submission Checklist</h2>
-        <p className="text-sm text-gray-600 mb-6">
-          Stop, take 5 and review the request before pressing the submit button.<br />
-          Whilst you can add more information to this request at any time, there are fields requesting information that is mandatory due to the
-          critical nature of the information they provide to the Lighting Design team. Mandatory fields inform their work and ensuring a speedy return
-          of your request.
+    <form onSubmit={handleSubmit(submitHandler)} className="form-page">
+      <div className="form-panel animate-fade">
+        <h2 className="section-title">Pre-submission Checklist</h2>
+        <p className="helper-text">
+          Stop, take 5 and review the request before pressing the submit button.
+          Whilst you can add more information to this request at any time, there are fields
+          requesting information that is mandatory due to the critical nature of the information
+          they provide to the Lighting Design team. Mandatory fields inform their work and ensure
+          a speedy return of your request.
         </p>
 
-        <h3 className="text-lg font-semibold text-[#13294B] underline">Information Checklist</h3>
+        <h3 className="section-subtitle">Information Checklist</h3>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="form-grid grid-2">
           {checklistFields.map((field) => (
-            <div key={field.name} className="flex justify-between">
-              <span className="text-[#13294B] font-medium">{field.label}</span>
-              <span className="text-white bg-[#13294B] px-3 py-1 rounded-md font-semibold">
-                {getYesNo(formData[field.name])}
-              </span>
+            <div key={field.name} className="flex justify-between items-center gap-4">
+              <span className="text-gray-800 font-medium">{field.label}</span>
+              <span className="list-chip">{getYesNo(formData[field.name])}</span>
             </div>
           ))}
         </div>
 
-        <div className="flex justify-between pt-6">
-          <button
-            type="button"
-            onClick={onBack}
-            className="bg-gray-300 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-400"
-          >
+        <div className="action-row">
+          <button type="button" onClick={onBack} className="btn-outline">
             Back
           </button>
-          <button
-            type="submit"
-            className="bg-[#00B388] hover:bg-[#00a177] text-white px-6 py-2 rounded-lg font-semibold"
-          >
+          <button type="submit" className="btn-accent">
             Submit
           </button>
         </div>

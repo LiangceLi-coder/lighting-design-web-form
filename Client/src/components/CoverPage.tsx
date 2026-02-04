@@ -11,27 +11,27 @@ const Coverpage = () => {
   };
 
   return (
-    <div style={{
-        display:'flex',
-        alignItems:'center',
-        justifyContent:'center',
-                 width:'100vw',
-    }}>
-        <div className="cover-box">
-        <img className="cover-logo" alt="Haneco Logo" src="/Haneco_Logo_Mono.svg" />
-
-        <div className="cover-title">Project Submission Form</div>
-
-        <div className="cover-text">Fill the form to upload your project</div>
-
-        <button onClick={scrollToForm} className="upload-btn">
-          Get Start
-        </button>
+    <section className="hero">
+      <div className="hero-card animate-fade">
+        <div className="hero-topline">Lighting Design Portal</div>
+        <img className="hero-logo" alt="Haneco Logo" src="/Haneco_Logo_Mono.svg" />
+        <h1 className="hero-title">Project Submission Form</h1>
+        <p className="hero-subtitle">
+          A guided request flow built for speed, clarity, and precision in lighting
+          design submissions.
+        </p>
+        <div className="hero-actions">
+          <button onClick={scrollToForm} className="btn-primary">
+            Start Submission
+          </button>
+        </div>
+        <div className="hero-meta">
+          <span className="meta-chip">3-step guided workflow</span>
+          <span className="meta-chip">Attach drawings & specs</span>
+          <span className="meta-chip">Haneco Lighting</span>
+        </div>
       </div>
-    </div>
-
-      
-
+    </section>
   );
 };
 

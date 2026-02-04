@@ -4,12 +4,10 @@ import Step1BasicInfo from "../components/Step1BasicInfo";
 import Step2Transport from "../components/Step2BasicInfo";
 import Step3LightingDesign from "../components/Step3LightingInfo";
 import PreSubmissionChecklist from "../components/PreSubmissionChecklist";
-import Coverpage from "../components/coverpage";
 
 export default function MultiStepForm() {
   const methods = useForm({
     defaultValues: {
-      // 设置所有默认值，避免切换页面时数据丢失
       role: "",
       wholesaler: "",
       address: "",
@@ -36,15 +34,15 @@ export default function MultiStepForm() {
       standardRequired: "",
       control: "",
       products: [{ category: "", product: "" }],
-      otherInfo: ""
-    }
+      otherInfo: "",
+    },
   });
 
   const [step, setStep] = useState(1);
   const [collectedData, setCollectedData] = useState({});
 
   const nextStep = (stepData) => {
-    setCollectedData(prev => ({ ...prev, ...stepData }));
+    setCollectedData((prev) => ({ ...prev, ...stepData }));
     setStep((prev) => prev + 1);
   };
 
@@ -52,8 +50,7 @@ export default function MultiStepForm() {
 
   const handleFinalSubmit = (data) => {
     const final = { ...collectedData, ...data };
-    console.log("✅ Final Submission JSON:", final);
-
+    console.log("Final Submission JSON:", final);
   };
 
   return (
@@ -67,7 +64,7 @@ export default function MultiStepForm() {
           transportData={collectedData}
         />
       )}
-       {step === 4 && <PreSubmissionChecklist onSubmit={handleFinalSubmit} onBack={prevStep} />}
+      {step === 4 && <PreSubmissionChecklist onSubmit={handleFinalSubmit} onBack={prevStep} />}
     </FormProvider>
   );
 }

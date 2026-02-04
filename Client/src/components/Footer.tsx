@@ -1,32 +1,12 @@
 import React from "react";
 
 const Footer = () => {
-    return(
-            <div
-                style={{
-                    width:'100%',
-                    height:'3rem',
-                    // backgroundColor:'#00b388',
-                    background:'linear-gradient(to top, #00b389ff 20%, #6ff0ce 90%)',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    color:'#ffffff',
-                    alignItems:'center',
-                }}>
-
-                <p style={{
-                    marginLeft:'4rem',
-                    fontSize:'1vw'
-                }}>Copyright © 2025 Haneco Lighting</p>
-
-                <p style={{
-                    marginRight:'4rem',
-                    fontSize:'1vw'
-                }}>Powered By Haneco Lighting</p>
-
-            </div>
-    );
-}
+  return (
+    <footer className="footer">
+      <span>Copyright 2025 Haneco Lighting</span>
+      <span>Powered by Haneco Lighting</span>
+    </footer>
+  );
+};
 
 export default Footer;
