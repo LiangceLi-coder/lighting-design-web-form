@@ -14,6 +14,7 @@ const Coverpage = () => {
     <section className="hero">
       <div className="hero-card animate-fade">
         <div className="hero-topline">Lighting Design Portal</div>
+        <div className="status-banner">Internal Test Only * Not Fully Functional, Not Released For Use</div>
         <img className="hero-logo" alt="Haneco Logo" src="/Haneco_Logo_Mono.svg" />
         <h1 className="hero-title">Project Submission Form</h1>
         <p className="hero-subtitle">
