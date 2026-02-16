@@ -451,6 +451,27 @@ body::-webkit-scrollbar {
   background: var(--surface-2);
 }
 
+.input-with-spinner {
+  position: relative;
+}
+
+.input-with-spinner input {
+  padding-right: 40px;
+}
+
+.loading-spinner {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  border-radius: 999px;
+  border: 2px solid rgba(15, 35, 60, 0.2);
+  border-top-color: var(--brand-500);
+  animation: spin 0.7s linear infinite;
+}
+
 .footer {
   padding: 18px 24px;
   background: linear-gradient(90deg, rgba(11, 26, 42, 0.95), rgba(0, 179, 136, 0.85));
@@ -481,6 +502,12 @@ body::-webkit-scrollbar {
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 

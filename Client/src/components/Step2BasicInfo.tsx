@@ -46,6 +46,7 @@ export default function Step2Transport({ onNext, onBack }) {
   const [showOpportunityFields, setShowOpportunityFields] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
 
   const linkToOpportunity = useWatch({ control, name: "linkToOpportunity" });
   const opportunityExists = useWatch({ control, name: "opportunityExists" });
@@ -165,31 +166,38 @@ export default function Step2Transport({ onNext, onBack }) {
             {opportunityExists === "Yes" && (
               <div className="relative">
                 <label>Search Opportunity</label>
-                <input
-                  type="text"
-                  placeholder="Type keyword to search..."
-                  onChange={async (e) => {
-                    const keyword = e.target.value.trim();
+                <div className="input-with-spinner">
+                  <input
+                    type="text"
+                    placeholder="Type keyword to search..."
+                    onChange={async (e) => {
+                      const keyword = e.target.value.trim();
 
-                    if (keyword.length < 2) {
-                      setSearchResults([]);
-                      return;
-                    }
+                      if (keyword.length < 2) {
+                        setSearchResults([]);
+                        setIsSearching(false);
+                        return;
+                      }
 
-                    try {
-                      const res = await fetch(
-                        `https://lighting-design-web-form.onrender.com/api/opportunities?q=${encodeURIComponent(
-                          keyword
-                        )}`
-                      );
-                      const data = await res.json();
-                      setSearchResults(data || []);
-                    } catch (err) {
-                      console.error("Search opportunities error:", err);
-                      setSearchResults([]);
-                    }
-                  }}
-                />
+                      setIsSearching(true);
+                      try {
+                        const res = await fetch(
+                          `https://lighting-design-web-form.onrender.com/api/opportunities?q=${encodeURIComponent(
+                            keyword
+                          )}`
+                        );
+                        const data = await res.json();
+                        setSearchResults(data || []);
+                      } catch (err) {
+                        console.error("Search opportunities error:", err);
+                        setSearchResults([]);
+                      } finally {
+                        setIsSearching(false);
+                      }
+                    }}
+                  />
+                  {isSearching && <span className="loading-spinner" aria-label="Loading" />}
+                </div>
 
                 {searchResults.length > 0 && (
                   <div className="absolute z-10 bg-white border border-gray-200 w-full rounded-xl mt-2 max-h-64 overflow-y-auto shadow-lg">
