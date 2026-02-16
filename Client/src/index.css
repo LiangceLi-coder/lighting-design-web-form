@@ -451,25 +451,35 @@ body::-webkit-scrollbar {
   background: var(--surface-2);
 }
 
-.input-with-spinner {
-  position: relative;
-}
-
-.input-with-spinner input {
-  padding-right: 40px;
+.search-loading {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(0, 179, 136, 0.08);
+  color: var(--ink-700);
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
 .loading-spinner {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  width: 16px;
-  height: 16px;
-  margin-top: -8px;
+  width: 22px;
+  height: 22px;
   border-radius: 999px;
-  border: 2px solid rgba(15, 35, 60, 0.2);
+  border: 3px solid rgba(15, 35, 60, 0.18);
   border-top-color: var(--brand-500);
   animation: spin 0.7s linear infinite;
+}
+
+.search-empty {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(15, 35, 60, 0.06);
+  color: var(--ink-700);
+  font-weight: 600;
 }
 
 .footer {

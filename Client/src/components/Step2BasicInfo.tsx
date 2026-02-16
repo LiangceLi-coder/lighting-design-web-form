@@ -47,6 +47,7 @@ export default function Step2Transport({ onNext, onBack }) {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   const linkToOpportunity = useWatch({ control, name: "linkToOpportunity" });
   const opportunityExists = useWatch({ control, name: "opportunityExists" });
@@ -166,12 +167,13 @@ export default function Step2Transport({ onNext, onBack }) {
             {opportunityExists === "Yes" && (
               <div className="relative">
                 <label>Search Opportunity</label>
-                <div className="input-with-spinner">
+                <div>
                   <input
                     type="text"
                     placeholder="Type keyword to search..."
                     onChange={async (e) => {
                       const keyword = e.target.value.trim();
+                      setSearchKeyword(keyword);
 
                       if (keyword.length < 2) {
                         setSearchResults([]);
@@ -196,8 +198,14 @@ export default function Step2Transport({ onNext, onBack }) {
                       }
                     }}
                   />
-                  {isSearching && <span className="loading-spinner" aria-label="Loading" />}
                 </div>
+
+                {isSearching && (
+                  <div className="search-loading">
+                    <span className="loading-spinner" aria-label="Loading" />
+                    <span>Searching opportunities...</span>
+                  </div>
+                )}
 
                 {searchResults.length > 0 && (
                   <div className="absolute z-10 bg-white border border-gray-200 w-full rounded-xl mt-2 max-h-64 overflow-y-auto shadow-lg">
@@ -218,6 +226,10 @@ export default function Step2Transport({ onNext, onBack }) {
                       </div>
                     ))}
                   </div>
+                )}
+
+                {!isSearching && searchKeyword.length >= 2 && searchResults.length === 0 && (
+                  <div className="search-empty">No Opportunity</div>
                 )}
 
                 {selectedOpportunity && (
