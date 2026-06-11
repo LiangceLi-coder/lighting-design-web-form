@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
 const areaTypesWithSubSelection = [
@@ -48,6 +48,10 @@ export default function Step2Transport({ onNext, onBack }) {
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchError, setSearchError] = useState("");
+  const [isAdvancing, setIsAdvancing] = useState(false);
+  const latestSearchId = useRef(0);
+  const isAdvancingRef = useRef(false);
 
   const linkToOpportunity = useWatch({ control, name: "linkToOpportunity" });
   const opportunityExists = useWatch({ control, name: "opportunityExists" });
@@ -60,6 +64,10 @@ export default function Step2Transport({ onNext, onBack }) {
   const businessdivision = ["Haneco", "Lucesco", "Kasta"];
 
   const handleNextClick = async () => {
+    if (isAdvancingRef.current) return;
+    isAdvancingRef.current = true;
+    setIsAdvancing(true);
+
     const fieldsToValidate = [
       "contractor",
       "activeTender",
@@ -90,7 +98,11 @@ export default function Step2Transport({ onNext, onBack }) {
     }
 
     const isValid = await trigger(fieldsToValidate);
-    if (!isValid) return;
+    if (!isValid) {
+      isAdvancingRef.current = false;
+      setIsAdvancing(false);
+      return;
+    }
 
     onNext();
   };
@@ -171,11 +183,17 @@ export default function Step2Transport({ onNext, onBack }) {
                   <input
                     type="text"
                     placeholder="Type keyword to search..."
+                    value={searchKeyword}
                     onChange={async (e) => {
-                      const keyword = e.target.value.trim();
+                      const keyword = e.target.value;
+                      const query = keyword.trim();
+                      const searchId = ++latestSearchId.current;
                       setSearchKeyword(keyword);
+                      setSearchError("");
+                      setSelectedOpportunity(null);
+                      setValue("opportunityId", "");
 
-                      if (keyword.length < 2) {
+                      if (query.length < 2) {
                         setSearchResults([]);
                         setIsSearching(false);
                         return;
@@ -185,16 +203,28 @@ export default function Step2Transport({ onNext, onBack }) {
                       try {
                         const res = await fetch(
                           `https://lighting-design-web-form.onrender.com/api/opportunities?q=${encodeURIComponent(
-                            keyword
+                            query
                           )}`
                         );
                         const data = await res.json();
-                        setSearchResults(data || []);
+
+                        if (!res.ok || !Array.isArray(data)) {
+                          throw new Error(data?.message || "Opportunity search failed");
+                        }
+
+                        if (searchId === latestSearchId.current) {
+                          setSearchResults(data);
+                        }
                       } catch (err) {
                         console.error("Search opportunities error:", err);
-                        setSearchResults([]);
+                        if (searchId === latestSearchId.current) {
+                          setSearchResults([]);
+                          setSearchError("Unable to search opportunities. Please try again.");
+                        }
                       } finally {
-                        setIsSearching(false);
+                        if (searchId === latestSearchId.current) {
+                          setIsSearching(false);
+                        }
                       }
                     }}
                   />
@@ -216,6 +246,7 @@ export default function Step2Transport({ onNext, onBack }) {
                         onClick={() => {
                           setValue("opportunityId", opp.id);
                           setSelectedOpportunity(opp);
+                          setSearchKeyword(opp.name);
                           setSearchResults([]);
                         }}
                       >
@@ -228,7 +259,13 @@ export default function Step2Transport({ onNext, onBack }) {
                   </div>
                 )}
 
-                {!isSearching && searchKeyword.length >= 2 && searchResults.length === 0 && (
+                {searchError && <div className="search-empty">{searchError}</div>}
+
+                {!isSearching &&
+                  !searchError &&
+                  !selectedOpportunity &&
+                  searchKeyword.trim().length >= 2 &&
+                  searchResults.length === 0 && (
                   <div className="search-empty">No Opportunity</div>
                 )}
 
@@ -242,6 +279,8 @@ export default function Step2Transport({ onNext, onBack }) {
                       type="button"
                       onClick={() => {
                         setSelectedOpportunity(null);
+                        setSearchKeyword("");
+                        setValue("opportunityId", "");
                       }}
                       className="btn-outline"
                     >
@@ -408,8 +447,8 @@ export default function Step2Transport({ onNext, onBack }) {
           <button type="button" onClick={onBack} className="btn-outline">
             Back
           </button>
-          <button type="button" onClick={handleNextClick} className="btn-accent">
-            Next
+          <button type="button" onClick={handleNextClick} disabled={isAdvancing} className="btn-accent">
+            {isAdvancing ? "Loading..." : "Next"}
           </button>
         </div>
       </div>

@@ -17,9 +17,15 @@ export default function Step3LightingDesign({ onBack, onNext }) {
       try {
         const res = await fetch("https://lighting-design-web-form.onrender.com/api/products");
         const data = await res.json();
+
+        if (!res.ok || !Array.isArray(data)) {
+          throw new Error(data?.message || "Products response was not a list");
+        }
+
         setAllProducts(data);
       } catch (err) {
         console.error("Failed to load /api/products:", err);
+        setAllProducts([]);
       }
     };
     fetchProducts();
@@ -233,7 +239,7 @@ export default function Step3LightingDesign({ onBack, onNext }) {
           <button type="button" onClick={onBack} className="btn-outline">
             Back
           </button>
-          <button type="submit" onClick={submitHandler} className="btn-accent">
+          <button type="button" onClick={submitHandler} className="btn-accent">
             Next
           </button>
         </div>

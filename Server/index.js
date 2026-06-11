@@ -23,6 +23,13 @@ function normalizeSfDate(value) {
   return d.toISOString().slice(0, 10); // 'YYYY-MM-DD'
 }
 
+function escapeSoqlLikeTerm(value) {
+  return String(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/[%_]/g, "\\$&");
+}
+
 // ---------- 工具函数：根据 products 更新 Case.Selected_Products__c ----------
 // 方案 B：把多条产品信息拼成多行长文本，写入 Case 上的 Long Text 字段 Selected_Products__c
 async function updateCaseSelectedProducts(conn, caseId, productsRaw) {
@@ -112,14 +119,14 @@ app.get("/api/opportunities", async (req,res)=> {
   try 
   {
     const conn = await getSFConnection();
-     const rawQ = (req.query.q || "").trim();
+    const rawQ = String(req.query.q || "").trim();
     if (!rawQ) {
       // 没关键字就直接返回空数组
       return res.json([]);
     }
 
     // 简单清洗一下，避免 SOQL 注入
-    const q = rawQ.replace(/['"]/g, "");
+    const q = escapeSoqlLikeTerm(rawQ.slice(0, 100));
 
     const soql = `
       SELECT Id, Name, StageName, Amount, CloseDate
@@ -145,7 +152,7 @@ app.get("/api/opportunities", async (req,res)=> {
   }
 
   catch (error) {
-    console.error("[API /api/opportunities]");
+    console.error("[API /api/opportunities]", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",

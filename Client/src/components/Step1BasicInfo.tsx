@@ -117,7 +117,7 @@ export default function Step1BasicInfo({ onNext }) {
 
         <div className="action-row">
           <span className="helper-text">You can continue and edit later.</span>
-          <button type="submit" onClick={handleNextClick} className="btn-accent">
+          <button type="button" onClick={handleNextClick} className="btn-accent">
             Next
           </button>
         </div>
