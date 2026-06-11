@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
 export default function Step1BasicInfo({ onNext }) {
@@ -11,8 +11,14 @@ export default function Step1BasicInfo({ onNext }) {
   } = useFormContext();
 
   const selectedTerritory = useWatch({ control, name: "territory" });
+  const hasMountedTerritory = useRef(false);
 
   useEffect(() => {
+    if (!hasMountedTerritory.current) {
+      hasMountedTerritory.current = true;
+      return;
+    }
+
     setValue("wholesaler", "");
   }, [selectedTerritory, setValue]);
 

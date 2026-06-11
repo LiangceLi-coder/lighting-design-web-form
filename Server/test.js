@@ -2,8 +2,13 @@ const jsforce = require("jsforce");
 require("dotenv").config();
 
 async function run() {
+  const loginUrl =
+    process.env.SALESFORCE_LOGIN_URL ||
+    process.env.SF_LOGIN_URL ||
+    "https://login.salesforce.com";
+
   const conn = new jsforce.Connection({
-    loginUrl: process.env.SF_LOGIN_URL,
+    loginUrl,
   });
 
   await conn.login(

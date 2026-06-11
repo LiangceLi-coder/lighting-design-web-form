@@ -39,15 +39,22 @@ export default function Step2Transport({ onNext, onBack }) {
     register,
     trigger,
     setValue,
+    getValues,
     control,
     formState: { errors },
   } = useFormContext();
 
   const [showOpportunityFields, setShowOpportunityFields] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedOpportunity, setSelectedOpportunity] = useState(null);
+  const [selectedOpportunity, setSelectedOpportunity] = useState(() => {
+    const id = getValues("opportunityId");
+    const name = getValues("opportunitySearchName");
+    return id && name ? { id, name } : null;
+  });
   const [isSearching, setIsSearching] = useState(false);
-  const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState(
+    () => getValues("opportunitySearchName") || ""
+  );
   const [searchError, setSearchError] = useState("");
   const [isAdvancing, setIsAdvancing] = useState(false);
   const latestSearchId = useRef(0);
@@ -189,6 +196,7 @@ export default function Step2Transport({ onNext, onBack }) {
                       const query = keyword.trim();
                       const searchId = ++latestSearchId.current;
                       setSearchKeyword(keyword);
+                      setValue("opportunitySearchName", keyword);
                       setSearchError("");
                       setSelectedOpportunity(null);
                       setValue("opportunityId", "");
@@ -245,6 +253,7 @@ export default function Step2Transport({ onNext, onBack }) {
                         className="p-3 hover:bg-gray-100 cursor-pointer"
                         onClick={() => {
                           setValue("opportunityId", opp.id);
+                          setValue("opportunitySearchName", opp.name);
                           setSelectedOpportunity(opp);
                           setSearchKeyword(opp.name);
                           setSearchResults([]);
@@ -281,6 +290,7 @@ export default function Step2Transport({ onNext, onBack }) {
                         setSelectedOpportunity(null);
                         setSearchKeyword("");
                         setValue("opportunityId", "");
+                        setValue("opportunitySearchName", "");
                       }}
                       className="btn-outline"
                     >

@@ -17,7 +17,7 @@ const checklistFields = [
   { label: "If Sports Lighting, Glare or Obtrusive Light Concerns Captured", name: "sportsGlare" },
 ];
 
-export default function PreSubmissionChecklist({ onBack, onSubmit }) {
+export default function PreSubmissionChecklist({ onBack, onSubmitted }) {
   const { getValues, handleSubmit } = useFormContext();
   const formData = getValues();
 
@@ -60,6 +60,7 @@ export default function PreSubmissionChecklist({ onBack, onSubmit }) {
       }
 
       alert("Successfully sent data to backend. Case Id: " + result.caseId);
+      onSubmitted();
       setSubmitted(true);
     } catch (error) {
       console.error(error);
