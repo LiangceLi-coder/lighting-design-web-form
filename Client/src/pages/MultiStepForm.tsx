@@ -4,6 +4,7 @@ import Step1BasicInfo from "../components/Step1BasicInfo";
 import Step2Transport from "../components/Step2BasicInfo";
 import Step3LightingDesign from "../components/Step3LightingInfo";
 import PreSubmissionChecklist from "../components/PreSubmissionChecklist";
+import FinishPage from "./FinishPage";
 
 const DRAFT_STORAGE_KEY = "lighting-design-form-draft";
 
@@ -72,6 +73,7 @@ export default function MultiStepForm() {
   });
 
   const [step, setStep] = useState(initialDraft.step);
+  const [submissionResult, setSubmissionResult] = useState(null);
 
   useEffect(() => {
     saveDraft(step, methods.getValues());
@@ -93,7 +95,17 @@ export default function MultiStepForm() {
   const resetForm = () => {
     clearDraft();
     methods.reset(defaultValues);
+    setSubmissionResult(null);
     setStep(1);
+    window.scrollTo({ top: 0, behavior: "instant" });
+  };
+
+  const handleSubmissionComplete = (result) => {
+    clearDraft();
+    methods.reset(defaultValues);
+    setSubmissionResult(result);
+    setStep(5);
+    window.scrollTo({ top: 0, behavior: "instant" });
   };
 
   return (
@@ -105,9 +117,12 @@ export default function MultiStepForm() {
       )}
       {step === 4 && (
         <PreSubmissionChecklist
-          onSubmitted={resetForm}
+          onSubmissionComplete={handleSubmissionComplete}
           onBack={prevStep}
         />
+      )}
+      {step === 5 && (
+        <FinishPage result={submissionResult} onReturnHome={resetForm} />
       )}
     </FormProvider>
   );

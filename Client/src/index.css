@@ -432,6 +432,13 @@ body::-webkit-scrollbar {
   transform: translateY(-1px);
 }
 
+.btn-accent:disabled,
+.btn-outline:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
 .list-chip {
   display: inline-flex;
   align-items: center;

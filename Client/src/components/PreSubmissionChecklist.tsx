@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 const checklistFields = [
@@ -17,9 +17,11 @@ const checklistFields = [
   { label: "If Sports Lighting, Glare or Obtrusive Light Concerns Captured", name: "sportsGlare" },
 ];
 
-export default function PreSubmissionChecklist({ onBack, onSubmitted }) {
+export default function PreSubmissionChecklist({ onBack, onSubmissionComplete }) {
   const { getValues, handleSubmit } = useFormContext();
   const formData = getValues();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
 
   const getYesNo = (value) => {
     if (Array.isArray(value)) return value.length > 0 ? "Y" : "N";
@@ -27,6 +29,10 @@ export default function PreSubmissionChecklist({ onBack, onSubmitted }) {
   };
 
   const submitHandler = async () => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+    setIsSubmitting(true);
+
     const allData = getValues();
 
     const files = allData.drawingFiles || [];
@@ -41,22 +47,33 @@ export default function PreSubmissionChecklist({ onBack, onSubmitted }) {
       });
     }
 
-    onSubmitted();
-    window.scrollTo({ top: 0, behavior: "instant" });
-
     try {
       const res = await fetch("https://lighting-design-web-form.onrender.com/api/lighting-design", {
         method: "POST",
         body: fd,
       });
 
-      const result = await res.json();
-      if (!result.success) {
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok || !result.success) {
         console.error("Server error:", result);
+        onSubmissionComplete({
+          success: false,
+          message: result.message || "The request could not be submitted.",
+        });
         return;
       }
+
+      onSubmissionComplete({
+        success: true,
+        message: result.message || "Your lighting design request was submitted successfully.",
+        caseId: result.caseId,
+      });
     } catch (error) {
       console.error(error);
+      onSubmissionComplete({
+        success: false,
+        message: "Unable to connect to the server. Please try again later.",
+      });
     }
   };
 
@@ -84,11 +101,11 @@ export default function PreSubmissionChecklist({ onBack, onSubmitted }) {
         </div>
 
         <div className="action-row">
-          <button type="button" onClick={onBack} className="btn-outline">
+          <button type="button" onClick={onBack} disabled={isSubmitting} className="btn-outline">
             Back
           </button>
-          <button type="submit" className="btn-accent">
-            Submit
+          <button type="submit" disabled={isSubmitting} className="btn-accent">
+            {isSubmitting ? "Submitting..." : "Submit"}
           </button>
         </div>
       </div>
