@@ -90,6 +90,12 @@ export default function MultiStepForm() {
     localStorage.removeItem(DRAFT_STORAGE_KEY);
   };
 
+  const resetForm = () => {
+    clearDraft();
+    methods.reset(defaultValues);
+    setStep(1);
+  };
+
   return (
     <FormProvider {...methods}>
       {step === 1 && <Step1BasicInfo onNext={nextStep} />}
@@ -99,7 +105,7 @@ export default function MultiStepForm() {
       )}
       {step === 4 && (
         <PreSubmissionChecklist
-          onSubmitted={clearDraft}
+          onSubmitted={resetForm}
           onBack={prevStep}
         />
       )}

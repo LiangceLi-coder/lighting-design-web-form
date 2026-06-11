@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useFormContext } from "react-hook-form";
 
 const checklistFields = [
@@ -21,11 +21,6 @@ export default function PreSubmissionChecklist({ onBack, onSubmitted }) {
   const { getValues, handleSubmit } = useFormContext();
   const formData = getValues();
 
-  const [submitted, setSubmitted] = useState(false);
-  if (submitted) {
-    window.location.href = "/";
-  }
-
   const getYesNo = (value) => {
     if (Array.isArray(value)) return value.length > 0 ? "Y" : "N";
     return value ? "Y" : "N";
@@ -46,6 +41,9 @@ export default function PreSubmissionChecklist({ onBack, onSubmitted }) {
       });
     }
 
+    onSubmitted();
+    window.scrollTo({ top: 0, behavior: "instant" });
+
     try {
       const res = await fetch("https://lighting-design-web-form.onrender.com/api/lighting-design", {
         method: "POST",
@@ -55,16 +53,10 @@ export default function PreSubmissionChecklist({ onBack, onSubmitted }) {
       const result = await res.json();
       if (!result.success) {
         console.error("Server error:", result);
-        alert("Failed to create Case: " + (result.message || "Unknown error"));
         return;
       }
-
-      alert("Successfully sent data to backend. Case Id: " + result.caseId);
-      onSubmitted();
-      setSubmitted(true);
     } catch (error) {
       console.error(error);
-      alert("Failed to send data to backend.");
     }
   };
 
